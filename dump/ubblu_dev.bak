@@ -1,0 +1,2091 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 11.5 (Ubuntu 11.5-1.pgdg18.04+1)
+-- Dumped by pg_dump version 11.5 (Ubuntu 11.5-1.pgdg18.04+1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: enum_channels_auto_join; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.enum_channels_auto_join AS ENUM (
+    'ANYONE',
+    'ANY GUEST USER',
+    'ANY EMPLOYEE',
+    'NONE'
+);
+
+
+ALTER TYPE public.enum_channels_auto_join OWNER TO postgres;
+
+--
+-- Name: enum_channels_channel_type; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.enum_channels_channel_type AS ENUM (
+    'PRIVATE',
+    'RESTRICTED',
+    'PUBLIC',
+    'PERSONAL'
+);
+
+
+ALTER TYPE public.enum_channels_channel_type OWNER TO postgres;
+
+--
+-- Name: enum_messages_file_upload_method; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.enum_messages_file_upload_method AS ENUM (
+    'GOOGLE-DRIVE',
+    'DROPBOX',
+    'NONE'
+);
+
+
+ALTER TYPE public.enum_messages_file_upload_method OWNER TO postgres;
+
+--
+-- Name: enum_messages_file_upload_service; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.enum_messages_file_upload_service AS ENUM (
+    'GOOGLE-DRIVE',
+    'DROPBOX',
+    'NONE'
+);
+
+
+ALTER TYPE public.enum_messages_file_upload_service OWNER TO postgres;
+
+--
+-- Name: enum_messages_file_upload_service_method; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.enum_messages_file_upload_service_method AS ENUM (
+    'GOOGLE-DRIVE',
+    'DROPBOX',
+    'NONE'
+);
+
+
+ALTER TYPE public.enum_messages_file_upload_service_method OWNER TO postgres;
+
+--
+-- Name: enum_messages_message_type; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.enum_messages_message_type AS ENUM (
+    'IMAGE',
+    'TEXT',
+    'FILE',
+    'MARKDOWN',
+    'YOUTUBE'
+);
+
+
+ALTER TYPE public.enum_messages_message_type OWNER TO postgres;
+
+--
+-- Name: enum_user-channel-relationships_status; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."enum_user-channel-relationships_status" AS ENUM (
+    'ADMIN',
+    'MEMBER',
+    'BLOCKED'
+);
+
+
+ALTER TYPE public."enum_user-channel-relationships_status" OWNER TO postgres;
+
+--
+-- Name: enum_user-user-relationships_status; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."enum_user-user-relationships_status" AS ENUM (
+    'FRIEND',
+    'BLOCKED',
+    'NONE'
+);
+
+
+ALTER TYPE public."enum_user-user-relationships_status" OWNER TO postgres;
+
+--
+-- Name: enum_user-workspace-relationships_email_notifications; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."enum_user-workspace-relationships_email_notifications" AS ENUM (
+    '15',
+    '60',
+    '0'
+);
+
+
+ALTER TYPE public."enum_user-workspace-relationships_email_notifications" OWNER TO postgres;
+
+--
+-- Name: enum_user-workspace-relationships_notification_frequency; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."enum_user-workspace-relationships_notification_frequency" AS ENUM (
+    '0',
+    '15',
+    '30',
+    '60',
+    '1440'
+);
+
+
+ALTER TYPE public."enum_user-workspace-relationships_notification_frequency" OWNER TO postgres;
+
+--
+-- Name: enum_user-workspace-relationships_status; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."enum_user-workspace-relationships_status" AS ENUM (
+    'SUPERADMIN',
+    'ADMIN',
+    'BLOCKED',
+    'GUEST USER',
+    'EMPLOYEE',
+    'NONE'
+);
+
+
+ALTER TYPE public."enum_user-workspace-relationships_status" OWNER TO postgres;
+
+--
+-- Name: enum_users_cloud-storage; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public."enum_users_cloud-storage" AS ENUM (
+    'GOOGLE-DRIVE',
+    'DROPBOX'
+);
+
+
+ALTER TYPE public."enum_users_cloud-storage" OWNER TO postgres;
+
+--
+-- Name: enum_users_cloud_storage; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.enum_users_cloud_storage AS ENUM (
+    'GOOGLE-DRIVE',
+    'DROPBOX'
+);
+
+
+ALTER TYPE public.enum_users_cloud_storage OWNER TO postgres;
+
+--
+-- Name: enum_workspaces_default_user_type; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.enum_workspaces_default_user_type AS ENUM (
+    'SUPERADMIN',
+    'ADMIN',
+    'MEMBER',
+    'EMPLOYEE'
+);
+
+
+ALTER TYPE public.enum_workspaces_default_user_type OWNER TO postgres;
+
+--
+-- Name: enum_workspaces_workspace_type; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.enum_workspaces_workspace_type AS ENUM (
+    'PUBLIC',
+    'PERSONAL'
+);
+
+
+ALTER TYPE public.enum_workspaces_workspace_type OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: SequelizeMeta; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."SequelizeMeta" (
+    name character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public."SequelizeMeta" OWNER TO postgres;
+
+--
+-- Name: Session; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Session" (
+    sid character varying(36) NOT NULL,
+    expires timestamp with time zone,
+    data text
+);
+
+
+ALTER TABLE public."Session" OWNER TO postgres;
+
+--
+-- Name: channel-meta; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."channel-meta" (
+    id integer NOT NULL,
+    channel_id integer NOT NULL,
+    meta_key character varying(255) NOT NULL,
+    meta_value character varying(255)
+);
+
+
+ALTER TABLE public."channel-meta" OWNER TO postgres;
+
+--
+-- Name: channel-meta_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."channel-meta_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."channel-meta_id_seq" OWNER TO postgres;
+
+--
+-- Name: channel-meta_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."channel-meta_id_seq" OWNED BY public."channel-meta".id;
+
+
+--
+-- Name: channel-notes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."channel-notes" (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    channel_id integer,
+    notes character varying(255),
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public."channel-notes" OWNER TO postgres;
+
+--
+-- Name: channel-notes_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."channel-notes_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."channel-notes_id_seq" OWNER TO postgres;
+
+--
+-- Name: channel-notes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."channel-notes_id_seq" OWNED BY public."channel-notes".id;
+
+
+--
+-- Name: channels; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.channels (
+    id integer NOT NULL,
+    workspace_id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    channel_type public.enum_channels_channel_type DEFAULT 'PUBLIC'::public.enum_channels_channel_type,
+    active boolean DEFAULT true,
+    created_by integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    description character varying(255),
+    visibility boolean DEFAULT true NOT NULL,
+    invite_link character varying(255) NOT NULL,
+    channels jsonb[] DEFAULT ARRAY[]::jsonb[],
+    auto_join public.enum_channels_auto_join DEFAULT 'NONE'::public.enum_channels_auto_join
+);
+
+
+ALTER TABLE public.channels OWNER TO postgres;
+
+--
+-- Name: channels_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.channels_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.channels_id_seq OWNER TO postgres;
+
+--
+-- Name: channels_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.channels_id_seq OWNED BY public.channels.id;
+
+
+--
+-- Name: connections; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.connections (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    room_id integer NOT NULL,
+    active boolean DEFAULT true,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    socket_id character varying(255) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public.connections OWNER TO postgres;
+
+--
+-- Name: connections_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.connections_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.connections_id_seq OWNER TO postgres;
+
+--
+-- Name: connections_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.connections_id_seq OWNED BY public.connections.id;
+
+
+--
+-- Name: departments; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.departments (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    workspace_id integer NOT NULL,
+    created_by integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    "default" boolean DEFAULT false
+);
+
+
+ALTER TABLE public.departments OWNER TO postgres;
+
+--
+-- Name: departments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.departments_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.departments_id_seq OWNER TO postgres;
+
+--
+-- Name: departments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.departments_id_seq OWNED BY public.departments.id;
+
+
+--
+-- Name: message-meta; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."message-meta" (
+    id integer NOT NULL,
+    message_id integer NOT NULL,
+    meta_key character varying(255) NOT NULL,
+    meta_value character varying(255)
+);
+
+
+ALTER TABLE public."message-meta" OWNER TO postgres;
+
+--
+-- Name: message-meta_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."message-meta_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."message-meta_id_seq" OWNER TO postgres;
+
+--
+-- Name: message-meta_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."message-meta_id_seq" OWNED BY public."message-meta".id;
+
+
+--
+-- Name: messages; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.messages (
+    id integer NOT NULL,
+    message character varying(255) DEFAULT ''::character varying,
+    message_type public.enum_messages_message_type DEFAULT 'TEXT'::public.enum_messages_message_type,
+    sender_id integer NOT NULL,
+    channel_id integer,
+    deleted boolean,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    receiver_id integer,
+    workspace_id integer NOT NULL,
+    is_pinned boolean DEFAULT false NOT NULL,
+    pinned_by integer,
+    pinned_at timestamp with time zone,
+    read_status boolean DEFAULT false,
+    file_upload_details jsonb,
+    thumbnail_blob bytea,
+    file_upload_service_method public.enum_messages_file_upload_service_method DEFAULT 'NONE'::public.enum_messages_file_upload_service_method,
+    quoted_msg_id integer,
+    is_tagged boolean DEFAULT false
+);
+
+
+ALTER TABLE public.messages OWNER TO postgres;
+
+--
+-- Name: messages_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.messages_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.messages_id_seq OWNER TO postgres;
+
+--
+-- Name: messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
+
+
+--
+-- Name: rooms; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.rooms (
+    id integer NOT NULL,
+    workspace_id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    active boolean DEFAULT true,
+    type character varying(255) DEFAULT true,
+    created_by integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.rooms OWNER TO postgres;
+
+--
+-- Name: rooms_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.rooms_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.rooms_id_seq OWNER TO postgres;
+
+--
+-- Name: rooms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.rooms_id_seq OWNED BY public.rooms.id;
+
+
+--
+-- Name: user-channel-relationships; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."user-channel-relationships" (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    channel_id integer NOT NULL,
+    status public."enum_user-channel-relationships_status",
+    is_receive_mail_notification boolean DEFAULT false NOT NULL,
+    read_status boolean DEFAULT false,
+    muted boolean DEFAULT false,
+    starred boolean DEFAULT false
+);
+
+
+ALTER TABLE public."user-channel-relationships" OWNER TO postgres;
+
+--
+-- Name: user-channel-relationships_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."user-channel-relationships_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."user-channel-relationships_id_seq" OWNER TO postgres;
+
+--
+-- Name: user-channel-relationships_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."user-channel-relationships_id_seq" OWNED BY public."user-channel-relationships".id;
+
+
+--
+-- Name: user-message-meta; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."user-message-meta" (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    other_user_id integer,
+    channel_id integer,
+    workspace_id integer,
+    notes character varying(255),
+    last_message_id integer,
+    is_muted boolean DEFAULT false NOT NULL,
+    is_tagged boolean DEFAULT false NOT NULL,
+    is_starred boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public."user-message-meta" OWNER TO postgres;
+
+--
+-- Name: user-message-meta_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."user-message-meta_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."user-message-meta_id_seq" OWNER TO postgres;
+
+--
+-- Name: user-message-meta_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."user-message-meta_id_seq" OWNED BY public."user-message-meta".id;
+
+
+--
+-- Name: user-meta; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."user-meta" (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    meta_key character varying(255) NOT NULL,
+    meta_value character varying(255)
+);
+
+
+ALTER TABLE public."user-meta" OWNER TO postgres;
+
+--
+-- Name: user-meta_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."user-meta_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."user-meta_id_seq" OWNER TO postgres;
+
+--
+-- Name: user-meta_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."user-meta_id_seq" OWNED BY public."user-meta".id;
+
+
+--
+-- Name: user-user-relationships; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."user-user-relationships" (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    other_user_id integer NOT NULL,
+    status public."enum_user-user-relationships_status" DEFAULT 'NONE'::public."enum_user-user-relationships_status"
+);
+
+
+ALTER TABLE public."user-user-relationships" OWNER TO postgres;
+
+--
+-- Name: user-user-relationships_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."user-user-relationships_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."user-user-relationships_id_seq" OWNER TO postgres;
+
+--
+-- Name: user-user-relationships_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."user-user-relationships_id_seq" OWNED BY public."user-user-relationships".id;
+
+
+--
+-- Name: user-workspace-relationships; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."user-workspace-relationships" (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    workspace_id integer NOT NULL,
+    status public."enum_user-workspace-relationships_status" DEFAULT 'NONE'::public."enum_user-workspace-relationships_status",
+    department_id integer,
+    is_suspended boolean DEFAULT false NOT NULL,
+    ubblu_tips boolean DEFAULT true,
+    ubblu_news_announcement boolean DEFAULT true,
+    notification_frequency public."enum_user-workspace-relationships_notification_frequency" DEFAULT '0'::public."enum_user-workspace-relationships_notification_frequency",
+    email_notifications public."enum_user-workspace-relationships_email_notifications" DEFAULT '15'::public."enum_user-workspace-relationships_email_notifications",
+    is_deleted boolean DEFAULT false,
+    availability boolean DEFAULT true
+);
+
+
+ALTER TABLE public."user-workspace-relationships" OWNER TO postgres;
+
+--
+-- Name: user-workspace-relationships_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."user-workspace-relationships_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."user-workspace-relationships_id_seq" OWNER TO postgres;
+
+--
+-- Name: user-workspace-relationships_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."user-workspace-relationships_id_seq" OWNED BY public."user-workspace-relationships".id;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    username character varying(255) NOT NULL,
+    email character varying(255) NOT NULL,
+    password character varying(255) NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    name character varying(255),
+    department_id integer,
+    timezone character varying(255),
+    note character varying(255),
+    profile_image character varying(255),
+    availability boolean DEFAULT true NOT NULL,
+    google_access_token json,
+    dropbox_access_token json,
+    cloud_storage public.enum_users_cloud_storage DEFAULT 'GOOGLE-DRIVE'::public.enum_users_cloud_storage
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: workspace-meta; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."workspace-meta" (
+    id integer NOT NULL,
+    workspace_id integer NOT NULL,
+    meta_key character varying(255) NOT NULL,
+    meta_value character varying(255)
+);
+
+
+ALTER TABLE public."workspace-meta" OWNER TO postgres;
+
+--
+-- Name: workspace-meta_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."workspace-meta_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."workspace-meta_id_seq" OWNER TO postgres;
+
+--
+-- Name: workspace-meta_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."workspace-meta_id_seq" OWNED BY public."workspace-meta".id;
+
+
+--
+-- Name: workspaces; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.workspaces (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL,
+    description character varying(255) DEFAULT ''::character varying,
+    active boolean DEFAULT true,
+    created_by integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    workspace_type public.enum_workspaces_workspace_type,
+    allow_new_registration boolean DEFAULT true NOT NULL,
+    show_signup_button boolean DEFAULT true NOT NULL,
+    must_have_email character varying(255),
+    default_user_type public.enum_workspaces_default_user_type DEFAULT 'MEMBER'::public.enum_workspaces_default_user_type NOT NULL
+);
+
+
+ALTER TABLE public.workspaces OWNER TO postgres;
+
+--
+-- Name: workspaces_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.workspaces_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.workspaces_id_seq OWNER TO postgres;
+
+--
+-- Name: workspaces_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.workspaces_id_seq OWNED BY public.workspaces.id;
+
+
+--
+-- Name: channel-meta id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."channel-meta" ALTER COLUMN id SET DEFAULT nextval('public."channel-meta_id_seq"'::regclass);
+
+
+--
+-- Name: channel-notes id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."channel-notes" ALTER COLUMN id SET DEFAULT nextval('public."channel-notes_id_seq"'::regclass);
+
+
+--
+-- Name: channels id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.channels ALTER COLUMN id SET DEFAULT nextval('public.channels_id_seq'::regclass);
+
+
+--
+-- Name: connections id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.connections ALTER COLUMN id SET DEFAULT nextval('public.connections_id_seq'::regclass);
+
+
+--
+-- Name: departments id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.departments ALTER COLUMN id SET DEFAULT nextval('public.departments_id_seq'::regclass);
+
+
+--
+-- Name: message-meta id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."message-meta" ALTER COLUMN id SET DEFAULT nextval('public."message-meta_id_seq"'::regclass);
+
+
+--
+-- Name: messages id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.messages ALTER COLUMN id SET DEFAULT nextval('public.messages_id_seq'::regclass);
+
+
+--
+-- Name: rooms id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.rooms ALTER COLUMN id SET DEFAULT nextval('public.rooms_id_seq'::regclass);
+
+
+--
+-- Name: user-channel-relationships id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user-channel-relationships" ALTER COLUMN id SET DEFAULT nextval('public."user-channel-relationships_id_seq"'::regclass);
+
+
+--
+-- Name: user-message-meta id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user-message-meta" ALTER COLUMN id SET DEFAULT nextval('public."user-message-meta_id_seq"'::regclass);
+
+
+--
+-- Name: user-meta id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user-meta" ALTER COLUMN id SET DEFAULT nextval('public."user-meta_id_seq"'::regclass);
+
+
+--
+-- Name: user-user-relationships id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user-user-relationships" ALTER COLUMN id SET DEFAULT nextval('public."user-user-relationships_id_seq"'::regclass);
+
+
+--
+-- Name: user-workspace-relationships id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user-workspace-relationships" ALTER COLUMN id SET DEFAULT nextval('public."user-workspace-relationships_id_seq"'::regclass);
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Name: workspace-meta id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."workspace-meta" ALTER COLUMN id SET DEFAULT nextval('public."workspace-meta_id_seq"'::regclass);
+
+
+--
+-- Name: workspaces id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.workspaces ALTER COLUMN id SET DEFAULT nextval('public.workspaces_id_seq'::regclass);
+
+
+--
+-- Data for Name: SequelizeMeta; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."SequelizeMeta" (name) FROM stdin;
+20190630144351-create-users.js
+20190630145919-create-user-meta.js
+20190707055009-create-workspaces.js
+20190707055022-create-workspace-meta.js
+20190707055030-create-channels.js
+20190707055038-create-channel-meta.js
+20190707055050-create-messages.js
+20190707055054-create-message-meta.js
+20190707055119-create-user-workspace-relationships.js
+20190707055133-create-user-user-relationships.js
+20190707055138-create-user-channel-relationships.js
+20190707074138-add-workspace-type.js
+20190717165326-add-message-receiverid.js
+20190717173526-add-message-workspaceId.js
+20190718123411-add-users-profilefields.js
+20190718143555-create-department.js
+20190720155349-add-channels-description.js
+20190720155349-add-users-availability.js
+20190722162149-add-channel-relationship-attributes.js
+20190723090459-create-user-message-meta.js
+20190729155426-create-channel-notes.js
+20190731173049-change-channel-status.js
+20190801234449-add-user-channel-relationship-email.js
+20190801234526-add-message-pin.js
+20190806170222-delete-channel-relationship-attributes.js
+20190807152252-add-user-message-attributes.js
+20190809122742-add-user-workspace-departmentId.js
+20190809122742-add-user-workspace-isSuspended.js
+20190814100511-add-workspace-allowNewRegistration.js
+20190916123540-add-user-workspace-notification-settings.js
+20191013064913-create_rooms_for_one_to_one_chat.js
+20191013070012-update_channels_add_connections.js
+20191101022514-connections.js
+20191106014833-update_user_workspace_relationship.js
+20191106020253-update_user_workspace_relationship_remove_existing_enum_types_notification_freq_and_email_notifications.js
+20191106021515-update_user_workspace_relationship_add_notification_add_email_notifications_frequency_with_different_enums.js
+20191114025135-update_connections.js
+20191124131718-create_user-workspace-relationships.js
+20191210221908-add_read_status.js
+20191222182053-add_read_status_in_user_channel_relationship.js
+20191225122952-update_users_add_access_tokens_col.js
+20191229141511-add_coloumn_thumbnail_blob.js
+20200102091244-update_user_channel_relationship.js
+20200107192726-add-fileupload-in_users_table.js
+20200109202834-update_departments_add_default_col.js
+20200112231648-update_channels_add_personal_channel_type_for_one_to_one_convo.js
+20200128092712-add_col_reply_msg_id_in_messages_table.js
+20200226134915-update_users_add_is_deleted.js
+20200302200505-update_user_workspace_add_availability_column.js
+20200307225211-rename_enum_label_employee_to_guest_user_in_userworkspacerelationship.js
+20200308195949-update_channels_change_autojoin_to_enum.js
+20200308200143-update_channels_change_autojoin_to_enum_create_auto_join_col.js
+20200308201013-update_channels_delete_autojoin.js
+20200308201057-update_channels_change_autojoin_to_enum_create_auto_join_col_new.js
+20200309020939-add_is_tagged_coloumn_in_messages.js
+\.
+
+
+--
+-- Data for Name: Session; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Session" (sid, expires, data) FROM stdin;
+AavyMzCpJlQBUW1HOATe31tEdfFlScMM	2336-11-15 10:08:41.871+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:41.871Z","secure":false,"httpOnly":false,"path":"/"}}
+ZX6Fz6N2pSiKImIDub7ADGb85rpmV5k6	2336-11-15 10:08:41.899+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:41.899Z","secure":false,"httpOnly":false,"path":"/"}}
+SGnCBlKgeGR4q0BLr23hvVFCKUzTbna6	2336-11-15 10:08:41.959+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:41.959Z","secure":false,"httpOnly":false,"path":"/"}}
+5TBycSduB-rzCABkjOeCo3PrCLG970Eg	2336-11-15 10:08:41.981+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:41.981Z","secure":false,"httpOnly":false,"path":"/"}}
+SLnVQdTd4RwE67Ahyq7L-d57R4rgBw1E	2336-11-15 10:08:42.282+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:42.282Z","secure":false,"httpOnly":false,"path":"/"}}
+1mpyP-utH3FblxEMksM9sXA4ZTSaQfvH	2336-11-15 10:08:42.283+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:42.283Z","secure":false,"httpOnly":false,"path":"/"}}
+NmE4PfqyU5IUX2530NqR5BEPd9eUwn3W	2336-11-15 10:08:42.309+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:42.309Z","secure":false,"httpOnly":false,"path":"/"},"test":"test"}
+R293ObdzHlxEBsCm5f2prMV0zSXM69ky	2336-11-15 10:08:42.375+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:42.375Z","secure":false,"httpOnly":false,"path":"/"}}
+lSRqoXSSkUn-DDwBSohAB1mIjQxukehZ	2336-11-15 10:08:42.506+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:42.506Z","secure":false,"httpOnly":false,"path":"/"}}
+ZhWXTJMZYqMFVg8doj1J6tmnSHbpRBr-	2336-11-15 10:08:42.509+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:42.509Z","secure":false,"httpOnly":false,"path":"/"}}
+mxrs750JGSJvyG5QJLK0qWw-wfx0MhnK	2336-11-15 10:08:42.54+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:42.540Z","secure":false,"httpOnly":false,"path":"/"}}
+G4urq9_o8BjDgpE4eAlxqzYHBNRcvDtJ	2336-11-15 10:08:42.543+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:42.543Z","secure":false,"httpOnly":false,"path":"/"}}
+Ls2CX5V_rFiXM46PMDPUdtMSDGuULJhm	2336-11-15 10:08:42.623+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:42.623Z","secure":false,"httpOnly":false,"path":"/"}}
+69j0jCVU_J0D7yHvhG4aZLSW4DgLcW_P	2336-11-15 10:08:42.66+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:42.660Z","secure":false,"httpOnly":false,"path":"/"}}
+ML6vRaBprKihOyeOuMuVNiF8yl2gEkgJ	2336-11-15 10:08:48.399+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:48.399Z","secure":false,"httpOnly":false,"path":"/"}}
+DLXqzs8lN7UWSHlBXqcXsK8_BDFB_zwV	2336-11-15 10:08:48.461+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:38:48.461Z","secure":false,"httpOnly":false,"path":"/"}}
+imboKcfrdx-tiUZrrXR0VozYToG3etp3	2336-11-15 10:10:07.6+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:07.600Z","secure":false,"httpOnly":false,"path":"/"}}
+CviFcivw2UPUZu1TW0Vv-TB8EU7DWYzB	2336-11-15 10:10:07.615+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:07.615Z","secure":false,"httpOnly":false,"path":"/"}}
+iq9eH74we1Z293-2GD4ZHRUBL83k9NSq	2336-11-15 10:10:07.694+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:07.694Z","secure":false,"httpOnly":false,"path":"/"}}
+givSqInE22mgh6T9jNhH0JfOWA1nfXfu	2336-11-15 10:10:07.718+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:07.718Z","secure":false,"httpOnly":false,"path":"/"}}
+f71eiuAkAaIfLJHUv1siUMlQl71bdSrO	2336-11-15 10:10:08.017+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:08.017Z","secure":false,"httpOnly":false,"path":"/"}}
+UpM8LVty9yRltDLooZEpNhbPvpqaN5Rh	2336-11-15 10:10:08.018+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:08.018Z","secure":false,"httpOnly":false,"path":"/"}}
+2uApgirStRXOzFLaNVxvjIkhGLDXuqyF	2336-11-15 10:10:08.052+05:30	{"cookie":{"originalMaxAge":9999999999999,"expires":"2336-11-15T04:40:08.052Z","secure":false,"httpOnly":false,"path":"/"},"test":"test"}
+HCuzcgToq4T0j_QqF6lFY1sg8Hy3qNhP	2336-11-15 10:10:08.085+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:08.085Z","secure":false,"httpOnly":false,"path":"/"}}
+tmnqHTQgHxgLiz92P2Wlp07zHSI75g4N	2336-11-15 10:10:08.246+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:08.246Z","secure":false,"httpOnly":false,"path":"/"}}
+k5GpTpityAZvMcOuCDUAOEq6YoRWcUxo	2336-11-15 10:10:08.243+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:08.243Z","secure":false,"httpOnly":false,"path":"/"}}
+bzA7Yw3AZmwdGk1aHV8sjxFxLQiii0wa	2336-11-15 10:10:08.279+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:08.279Z","secure":false,"httpOnly":false,"path":"/"}}
+bRtmJaE9XzTGJWDApILIIPogXezcIQWC	2336-11-15 10:10:08.284+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:08.284Z","secure":false,"httpOnly":false,"path":"/"}}
+OhS8OhyNRtPs03d1iz2_ncsI6zjFW0F7	2336-11-15 10:10:08.359+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:08.359Z","secure":false,"httpOnly":false,"path":"/"}}
+J7c6CaYcwM_cJS4l1zn4h4KX-qskfImT	2336-11-15 10:10:08.394+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:08.394Z","secure":false,"httpOnly":false,"path":"/"}}
+YTMCybhXjv3Oty5clQtIlbY8vilxbgpi	2336-11-15 10:10:25.209+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:25.209Z","secure":false,"httpOnly":false,"path":"/"}}
+0R4aD4j8Odiwm-f0t-wYT8xElUGa1EwA	2336-11-15 10:10:25.292+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:40:25.292Z","secure":false,"httpOnly":false,"path":"/"}}
+I3XOb5SmzH-y60WFbqwpF6TlIOINJuKO	2336-11-15 10:11:55.951+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:41:55.951Z","secure":false,"httpOnly":false,"path":"/"}}
+d5lOVoj1Tloyb0TjcMFUtf7-HI_otKZS	2336-11-15 10:11:55.965+05:30	{"cookie":{"originalMaxAge":9999999999999,"expires":"2336-11-15T04:41:55.965Z","secure":false,"httpOnly":false,"path":"/"}}
+malOCYMaA8yWFY6NDGp5iv1ezRhaQ4eb	2336-11-15 10:11:56.047+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:41:56.047Z","secure":false,"httpOnly":false,"path":"/"}}
+DBQEumW7tVHsovBf_RShowinHvkBdasv	2336-11-15 10:11:56.072+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:41:56.072Z","secure":false,"httpOnly":false,"path":"/"}}
+f3w06ZA7DwNBBofbpwDC_YcT1IUXafkN	2336-11-15 10:11:56.351+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:41:56.351Z","secure":false,"httpOnly":false,"path":"/"}}
+jr0KvV7tqSFwUIT5PSXcrWkXkJUGchCQ	2336-11-15 10:11:56.353+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:41:56.353Z","secure":false,"httpOnly":false,"path":"/"}}
+u7CuMu-ubw3dS-gOklpIJOpBrEE1_kB0	2336-11-15 10:11:56.382+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:41:56.382Z","secure":false,"httpOnly":false,"path":"/"},"test":"test"}
+s2p-dQ1e047kDWFbhnhrttfFDovZlfsJ	2336-11-15 10:11:56.421+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:41:56.421Z","secure":false,"httpOnly":false,"path":"/"}}
+h0S5fiMkSpGqpAWpenwY5qROHhtFrl0S	2336-11-15 10:11:56.573+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:41:56.573Z","secure":false,"httpOnly":false,"path":"/"}}
+LxRleOKtEvJ6AJFW9VTYMyXHOyOQKBOT	2336-11-15 10:11:56.577+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:41:56.577Z","secure":false,"httpOnly":false,"path":"/"}}
+z0N7FNpIpGJBbRMia8w9yA1I8nl_zpwD	2336-11-15 10:11:56.602+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:41:56.602Z","secure":false,"httpOnly":false,"path":"/"}}
+bvqIPPo-cobk_6VaYJBOlln2VoEOzI-N	2336-11-15 10:11:56.618+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:41:56.618Z","secure":false,"httpOnly":false,"path":"/"}}
+qO98t4e-lQolqa8Q54MRr1IiYnyBhY2I	2336-11-15 10:11:56.685+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:41:56.685Z","secure":false,"httpOnly":false,"path":"/"}}
+VwfQONqbvKAcVDxjV07-C_6eWidf81kT	2336-11-15 10:11:56.721+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:41:56.721Z","secure":false,"httpOnly":false,"path":"/"}}
+0RmQA-tIsTuECskT6g_j7aFY9ph7r-iC	2336-11-15 10:12:03.282+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:03.282Z","secure":false,"httpOnly":false,"path":"/"}}
+3PW3M9rgt4LHKO_pnbSVfKqr_B6ghcPf	2336-11-15 10:12:03.321+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:03.321Z","secure":false,"httpOnly":false,"path":"/"}}
+48LrWdgiymduvV1t4u-bUuIFnKtdP1rd	2336-11-15 10:12:28.605+05:30	{"cookie":{"originalMaxAge":9999999999999,"expires":"2336-11-15T04:42:28.605Z","secure":false,"httpOnly":false,"path":"/"}}
+7rsGtL4R7oQ4P2UUcJrpXtQ-w4gU3a1L	2336-11-15 10:12:28.619+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:28.619Z","secure":false,"httpOnly":false,"path":"/"}}
+4aD0nB4CfxDdSo5GBOLxwE0CziCIAvF-	2336-11-15 10:12:28.696+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:28.696Z","secure":false,"httpOnly":false,"path":"/"}}
+1L65piploL1RN9C1Q4ike4_RItl1J9to	2336-11-15 10:12:28.714+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:28.714Z","secure":false,"httpOnly":false,"path":"/"}}
+4vZg-dc2rw5yGr1TdEgw_jqZXUzEZu5c	2336-11-15 10:12:29.045+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:29.045Z","secure":false,"httpOnly":false,"path":"/"}}
+XF1fLBwK_K_1ytTFMhkLcUq7-ZCUxurK	2336-11-15 10:12:29.047+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:29.047Z","secure":false,"httpOnly":false,"path":"/"}}
+5xw-q0QUxKwlkNdZIMElstIo5Zhyc_zp	2336-11-15 10:12:29.081+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:29.081Z","secure":false,"httpOnly":false,"path":"/"},"test":"test"}
+4_jEjRPsmwUB-sZ2MAQFDr1PAcjncsjr	2336-11-15 10:12:29.119+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:29.119Z","secure":false,"httpOnly":false,"path":"/"}}
+VDbMQKAmlk_CgZLyNqgN4O_suN8v2lpE	2336-11-15 10:12:29.263+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:29.263Z","secure":false,"httpOnly":false,"path":"/"}}
+gFzQmmim5WHNc_DFYCC3Y5CKUTW1UCW3	2336-11-15 10:12:29.289+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:29.289Z","secure":false,"httpOnly":false,"path":"/"}}
+kOIq_azWeIR29XDD99bb47NKS43kq9gY	2336-11-15 10:12:29.313+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:29.313Z","secure":false,"httpOnly":false,"path":"/"}}
+bcUhwoGzcjnVxAN4I4gS7dhIM1OEsdMa	2336-11-15 10:12:29.323+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:29.323Z","secure":false,"httpOnly":false,"path":"/"}}
+JMZXRDF0xffwWjs52O3tiUfHlSG0CLLa	2336-11-15 10:12:29.407+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:29.407Z","secure":false,"httpOnly":false,"path":"/"}}
+PmdJR79H14qhANTGg32jGYI3bwl-MdkI	2336-11-15 10:12:29.43+05:30	{"cookie":{"originalMaxAge":10000000000000,"expires":"2336-11-15T04:42:29.430Z","secure":false,"httpOnly":false,"path":"/"}}
+\.
+
+
+--
+-- Data for Name: channel-meta; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."channel-meta" (id, channel_id, meta_key, meta_value) FROM stdin;
+\.
+
+
+--
+-- Data for Name: channel-notes; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."channel-notes" (id, user_id, channel_id, notes, created_at, updated_at) FROM stdin;
+1	30	27	first note	2019-12-22 14:42:10.656022+05:30	2019-12-22 14:42:10.656022+05:30
+2	12	27	My note 	2019-12-22 15:10:00.734482+05:30	2019-12-22 15:10:00.734482+05:30
+3	12	27	My note nw	2019-12-22 15:11:45.200236+05:30	2019-12-22 15:11:45.200236+05:30
+4	12	9	My note 	2019-12-23 01:47:48.872199+05:30	2019-12-23 01:47:48.872199+05:30
+5	12	10	test note	2019-12-30 18:11:54.123559+05:30	2019-12-30 18:11:54.123559+05:30
+6	37	94	My note test	2020-01-17 02:33:36.685797+05:30	2020-01-17 02:33:36.685797+05:30
+7	37	94	My note test v1	2020-01-17 02:36:44.328007+05:30	2020-01-17 02:36:44.328007+05:30
+8	37	94	My note test v2	2020-01-17 02:37:13.791785+05:30	2020-01-17 02:37:13.791785+05:30
+9	37	94	My note test v3	2020-01-17 02:40:32.20688+05:30	2020-01-17 02:40:32.20688+05:30
+12	37	112	My note test v1	2020-01-17 02:46:37.906586+05:30	2020-01-17 02:46:37.906586+05:30
+13	37	94	jsjs&#160;ssss&#160;quoted&#160;true&#160;ddd&#160;llks	2020-02-10 07:11:22.772756+05:30	2020-02-10 07:11:22.772756+05:30
+14	37	94	jsjs&#160;ssss&#160;quoted&#160;true&#160;ddd&#160;llks	2020-02-10 07:11:36.906664+05:30	2020-02-10 07:11:36.906664+05:30
+15	37	94	ssjjs	2020-02-10 07:12:06.257488+05:30	2020-02-10 07:12:06.257488+05:30
+16	37	94	ssjjs	2020-02-10 07:12:07.478667+05:30	2020-02-10 07:12:07.478667+05:30
+17	37	94	hihui	2020-02-10 07:15:03.951587+05:30	2020-02-10 07:15:03.951587+05:30
+10	37	94	My note test v4 edited now 1	2020-01-17 02:43:50.034704+05:30	2020-01-17 02:43:50.034704+05:30
+11	37	94	My note test v5edit	2020-01-17 02:46:20.725492+05:30	2020-01-17 02:46:20.725492+05:30
+\.
+
+
+--
+-- Data for Name: channels; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.channels (id, workspace_id, name, channel_type, active, created_by, created_at, updated_at, description, visibility, invite_link, channels, auto_join) FROM stdin;
+137	24	72_76	PERSONAL	t	76	2020-03-07 05:35:36.553424+05:30	2020-03-07 05:35:36.553424+05:30	\N	t	null	{}	NONE
+95	24	34_34	PERSONAL	t	34	2020-01-07 03:59:29.535915+05:30	2020-01-07 03:59:29.535915+05:30	\N	t	null	{}	NONE
+96	24	34_35	PERSONAL	t	34	2020-01-07 04:01:53.288025+05:30	2020-01-07 04:01:53.288025+05:30	\N	t	null	{}	NONE
+97	24	35_37	PERSONAL	t	37	2020-01-07 23:51:26.966822+05:30	2020-01-07 23:51:26.966822+05:30	\N	t	null	{}	NONE
+99	24	34_76	PERSONAL	t	76	2020-01-08 13:03:52.716035+05:30	2020-01-08 13:03:52.716035+05:30	\N	t	null	{}	NONE
+100	24	36_37	PERSONAL	t	37	2020-01-13 04:14:21.565805+05:30	2020-01-13 04:14:21.565805+05:30	\N	t	null	{}	NONE
+101	24	37_37	PERSONAL	t	37	2020-01-13 04:14:23.122602+05:30	2020-01-13 04:14:23.122602+05:30	\N	t	null	{}	NONE
+102	24	37_94	PERSONAL	t	37	2020-01-13 04:56:26.588948+05:30	2020-01-13 04:56:26.588948+05:30	\N	t	null	{}	NONE
+138	24	76_81	PERSONAL	t	76	2020-03-07 06:50:13.178715+05:30	2020-03-07 06:50:13.178715+05:30	\N	t	null	{}	NONE
+93	24	37_74	PERSONAL	t	37	2020-01-07 03:58:27.53014+05:30	2020-01-07 03:58:27.53014+05:30	\N	t	null	{}	NONE
+136	24	37_72	PERSONAL	t	72	2020-03-07 05:21:23.622588+05:30	2020-03-07 05:21:23.622588+05:30	\N	t	null	{}	NONE
+139	24	testchannelcreation	PUBLIC	t	37	2020-03-09 04:50:44.215856+05:30	2020-03-09 04:50:44.215856+05:30	test auto join	t	/invite/rohanfirst/testchannelcreation	{}	ANYONE
+103	24	testv1	PUBLIC	t	37	2020-01-13 10:06:49.294223+05:30	2020-01-13 10:06:49.294223+05:30	check channel creation	t	/invite/rohanfirst/testv1	{}	NONE
+106	24	testv4	PUBLIC	t	37	2020-01-13 10:15:34.92227+05:30	2020-01-13 10:15:34.92227+05:30	test chgannel creation	t	/invite/rohanfirst/testv4	{}	NONE
+107	24	testv5	PUBLIC	t	37	2020-01-13 10:16:53.852142+05:30	2020-01-13 10:16:53.852142+05:30	test cgannel creation	t	/invite/rohanfirst/testv5	{}	NONE
+109	24	testv8	PUBLIC	t	37	2020-01-13 10:22:07.595468+05:30	2020-01-13 10:22:07.595468+05:30	testing vhannel	f	/invite/rohanfirst/testv8	{}	NONE
+110	24	testsv10	PUBLIC	t	37	2020-01-13 10:24:30.529203+05:30	2020-01-13 10:24:30.529203+05:30	channel creation test	t	/invite/rohanfirst/testsv10	{}	NONE
+111	24	testv11	PUBLIC	t	37	2020-01-13 10:29:03.784576+05:30	2020-01-13 10:29:03.784576+05:30	test channel creation last step	t	/invite/rohanfirst/testv11	{}	NONE
+112	24	testv12	PUBLIC	t	37	2020-01-13 10:30:33.733001+05:30	2020-01-13 10:30:33.733001+05:30	tets channel creation	t	/invite/rohanfirst/testv12	{}	NONE
+104	24	testv2	PRIVATE	t	37	2020-01-13 10:10:20.337848+05:30	2020-01-13 10:10:20.337848+05:30	testing channel	t	/invite/rohanfirst/testv2	{}	NONE
+140	24	testingurlinvite	PUBLIC	t	37	2020-03-12 17:50:48.599437+05:30	2020-03-12 17:50:48.599437+05:30	test url invite	t	/invite/rohanfirst/testingurlinvite	{}	ANY EMPLOYEE
+113	68	77_77	PERSONAL	t	77	2020-01-16 15:29:16.100546+05:30	2020-01-16 15:29:16.100546+05:30	\N	t	null	{}	NONE
+114	72	79_79	PERSONAL	t	79	2020-01-16 15:34:39.062678+05:30	2020-01-16 15:34:39.062678+05:30	\N	t	null	{}	NONE
+116	24	36_83	PERSONAL	t	83	2020-01-16 16:35:48.247279+05:30	2020-01-16 16:35:48.247279+05:30	\N	t	null	{}	NONE
+117	24	37_83	PERSONAL	t	37	2020-01-16 22:23:13.81213+05:30	2020-01-16 22:23:13.81213+05:30	\N	t	null	{}	NONE
+118	24	37_70	PERSONAL	t	37	2020-01-18 03:28:51.555611+05:30	2020-01-18 03:28:51.555611+05:30	\N	t	null	{}	NONE
+119	24	37_73	PERSONAL	t	37	2020-01-18 03:40:13.452476+05:30	2020-01-18 03:40:13.452476+05:30	\N	t	null	{}	NONE
+120	24	37_81	PERSONAL	t	37	2020-01-18 03:40:17.704285+05:30	2020-01-18 03:40:17.704285+05:30	\N	t	null	{}	NONE
+123	24	testrohanchnae	PRIVATE	t	37	2020-01-18 04:30:34.809075+05:30	2020-01-18 04:30:34.809075+05:30	nkjahiuq	t	/invite/rohanfirst/testrohanchnae	{}	NONE
+124	24	dbdfdffd	PRIVATE	t	37	2020-01-18 04:38:21.804851+05:30	2020-01-18 04:38:21.804851+05:30	fdfd	t	/invite/rohanfirst/dbdfdffd	{}	NONE
+98	24	Rohan	PUBLIC	t	37	2020-01-07 23:58:34.367825+05:30	2020-01-07 23:58:34.367825+05:30	text	t	/invite/rohanfirst/rohan	{}	NONE
+125	24	Rohantestcnl	PRIVATE	t	37	2020-03-02 01:02:30.94441+05:30	2020-03-02 01:02:30.94441+05:30	testing	t	/invite/rohanfirst/rohantestcnl	{}	NONE
+126	24	Rohan	PRIVATE	t	37	2020-03-02 05:24:37.619517+05:30	2020-03-02 05:24:37.619517+05:30	jhghtyf	t	/invite/rohanfirst/rohan	{}	NONE
+127	24	Rohan	PRIVATE	t	37	2020-03-02 05:25:39.055802+05:30	2020-03-02 05:25:39.055802+05:30	vhgfhj	t	/invite/rohanfirst/rohan	{}	NONE
+128	24	Rohanwor	PRIVATE	t	37	2020-03-02 05:33:22.928471+05:30	2020-03-02 05:33:22.928471+05:30	bjhqe	t	/invite/rohanfirst/rohanwor	{}	NONE
+129	24	1march	PRIVATE	t	37	2020-03-02 05:47:09.10768+05:30	2020-03-02 05:47:09.10768+05:30	Testing channel type	t	/invite/rohanfirst/1march	{}	NONE
+94	24	34_37	PERSONAL	t	37	2020-01-07 03:58:27.54024+05:30	2020-01-07 03:58:27.54024+05:30	\N	t	null	{}	NONE
+130	24	1stmarchv1	PUBLIC	t	37	2020-03-02 05:55:37.631783+05:30	2020-03-02 05:55:37.631783+05:30	hkzs	t	/invite/rohanfirst/1stmarchv1	{}	NONE
+105	24	testv3	PRIVATE	t	37	2020-01-13 10:14:03.893896+05:30	2020-01-13 10:14:03.893896+05:30	test channel creation	t	/invite/rohanfirst/testv3	{}	NONE
+131	24	37_76	PERSONAL	t	76	2020-03-07 01:36:40.39812+05:30	2020-03-07 01:36:40.39812+05:30	\N	t	null	{}	NONE
+132	24	37_82	PERSONAL	t	37	2020-03-07 01:46:05.101657+05:30	2020-03-07 01:46:05.101657+05:30	\N	t	null	{}	NONE
+133	24	36_76	PERSONAL	t	76	2020-03-07 04:26:45.906025+05:30	2020-03-07 04:26:45.906025+05:30	\N	t	null	{}	NONE
+\.
+
+
+--
+-- Data for Name: connections; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.connections (id, user_id, room_id, active, created_at, updated_at, socket_id) FROM stdin;
+108	37	93	t	2020-01-07 03:58:27.715699+05:30	2020-01-07 03:58:27.715699+05:30	-i9RwgCyPOXCz8eNAABy
+111	34	96	t	2020-01-07 04:01:53.486941+05:30	2020-01-07 04:01:53.486941+05:30	QCs5DFGqrc-Bm8VPAACE
+141	37	111	t	2020-02-04 16:49:16.545223+05:30	2020-02-04 16:49:16.545223+05:30	M3c2T0I3cvVeAbXYAAAY
+143	37	110	t	2020-02-23 18:41:25.97436+05:30	2020-02-23 18:41:25.97436+05:30	2VvSz63uw78gxuIHAAB0
+127	77	113	t	2020-01-16 15:29:16.303525+05:30	2020-01-16 15:29:16.303525+05:30	ck9Nf8cmkYLD_xggAAAH
+128	79	114	t	2020-01-16 15:34:43.90227+05:30	2020-01-16 15:34:43.90227+05:30	JYmngV097h1tMC6BAAAG
+167	76	134	t	2020-03-07 04:51:00.628859+05:30	2020-03-07 04:51:00.628859+05:30	JXUezoJHfExg2LChAAAn
+130	83	116	t	2020-01-16 16:35:48.356052+05:30	2020-01-16 16:35:48.356052+05:30	4jBwKlVdPzg5wP2VAAAD
+138	37	106	t	2020-01-18 03:40:36.996144+05:30	2020-01-18 03:40:36.996144+05:30	TxKMI8CxtH6psf7aAAAh
+157	36	0	t	2020-03-07 03:42:13.651664+05:30	2020-03-07 03:42:13.651664+05:30	oWM9FyqqygIXiaMqAAAZ
+161	36	133	t	2020-03-07 04:34:33.916515+05:30	2020-03-07 04:34:33.916515+05:30	oWM9FyqqygIXiaMqAAAZ
+144	37	124	t	2020-02-23 18:41:35.919721+05:30	2020-02-23 18:41:35.919721+05:30	XaBkN40HWxFxXsNZAACK
+126	37	102	t	2020-01-13 04:56:26.790882+05:30	2020-01-13 04:56:26.790882+05:30	5hXhp6QfB-THpXv-AAAF
+145	37	123	t	2020-03-04 18:38:58.013077+05:30	2020-03-04 18:38:58.013077+05:30	BEuAZ6JPeA28aBC4AACN
+131	37	112	t	2020-01-16 22:09:32.674077+05:30	2020-01-16 22:09:32.674077+05:30	OveH9TmrGuczbdp_AACQ
+178	76	137	t	2020-03-07 05:35:37.637666+05:30	2020-03-07 05:35:37.637666+05:30	/chatroom#rQPJ60vcwC6DozDMAAA5
+136	37	119	t	2020-01-18 03:40:13.77048+05:30	2020-01-18 03:40:13.77048+05:30	eQxPXrrRXox_SZxKAAAR
+154	73	0	t	2020-03-07 03:17:11.475381+05:30	2020-03-07 03:17:11.475381+05:30	OiU4v3HIz92Hz7_IAAAU
+156	73	119	t	2020-03-07 03:41:30.134581+05:30	2020-03-07 03:41:30.134581+05:30	OiU4v3HIz92Hz7_IAAAU
+110	37	94	t	2020-01-07 04:00:40.977752+05:30	2020-01-07 04:00:40.977752+05:30	NzSoWTXzMNKBET7BAAAZ
+114	34	98	t	2020-01-07 23:58:34.385802+05:30	2020-01-07 23:58:34.385802+05:30	\N
+115	35	98	t	2020-01-07 23:58:34.385802+05:30	2020-01-07 23:58:34.385802+05:30	\N
+116	36	98	t	2020-01-07 23:58:34.385802+05:30	2020-01-07 23:58:34.385802+05:30	\N
+117	70	98	t	2020-01-07 23:58:34.385802+05:30	2020-01-07 23:58:34.385802+05:30	\N
+118	71	98	t	2020-01-07 23:58:34.385802+05:30	2020-01-07 23:58:34.385802+05:30	\N
+121	74	98	t	2020-01-07 23:58:34.385802+05:30	2020-01-07 23:58:34.385802+05:30	\N
+109	34	95	t	2020-01-07 03:59:29.692331+05:30	2020-01-07 03:59:29.692331+05:30	kB2aIMsd2rdMFxUpAAAe
+124	37	100	t	2020-01-13 04:14:21.712687+05:30	2020-01-13 04:14:21.712687+05:30	VX5gaDvwP0BSaChZAAAb
+112	34	94	t	2020-01-07 04:03:29.086621+05:30	2020-01-07 04:03:29.086621+05:30	rEVa913U719qHbNnAAAu
+125	37	101	t	2020-01-13 04:14:23.252798+05:30	2020-01-13 04:14:23.252798+05:30	oGNPiOAswdIZP2ppAAAQ
+162	35	0	t	2020-03-07 04:36:14.427147+05:30	2020-03-07 04:36:14.427147+05:30	E9qg_lFnNR04bSlKAAAe
+163	35	0	t	2020-03-07 04:36:14.427973+05:30	2020-03-07 04:36:14.427973+05:30	E9qg_lFnNR04bSlKAAAe
+123	76	99	t	2020-01-08 13:03:52.877767+05:30	2020-01-08 13:03:52.877767+05:30	wuAQLHF2GM56MKW2AAAE
+122	37	98	t	2020-01-07 23:58:34.385802+05:30	2020-01-07 23:58:34.385802+05:30	xD_gTwor1Gr_P-uDAACB
+158	36	100	t	2020-03-07 04:26:13.962981+05:30	2020-03-07 04:26:13.962981+05:30	oFkYc6RnV8d66e_BAAAM
+172	37	135	t	2020-03-07 05:13:26.550158+05:30	2020-03-07 05:13:26.550158+05:30	/chatroom#jVGPVNBvRIjILH6rAAAo
+129	37	115	t	2020-01-16 15:35:57.875964+05:30	2020-01-16 15:35:57.875964+05:30	hVcevufTQk1A_TOGAAAk
+134	37	118	t	2020-01-18 03:28:51.779332+05:30	2020-01-18 03:28:51.779332+05:30	viuTRB3qAqR9N21kAAB0
+113	37	97	t	2020-01-07 23:51:27.296012+05:30	2020-01-07 23:51:27.296012+05:30	17WO4O7aghPAU2uqAAAf
+140	37	105	t	2020-01-18 03:51:17.567691+05:30	2020-01-18 03:51:17.567691+05:30	dzmqFq_5IPuMCLtiAAB7
+139	37	104	t	2020-01-18 03:42:24.874604+05:30	2020-01-18 03:42:24.874604+05:30	nAYd1HFMez2wxdbeAACJ
+137	37	120	t	2020-01-18 03:40:17.817511+05:30	2020-01-18 03:40:17.817511+05:30	YY7vwfKzrgC1iznLAABC
+160	76	133	t	2020-03-07 04:26:46.265083+05:30	2020-03-07 04:26:46.265083+05:30	uj4O7Megj81ExEPyAAAR
+192	81	0	t	2020-03-07 07:01:24.229846+05:30	2020-03-07 07:01:24.229846+05:30	/chatroom#jzPNc2XPVO7oSiamAAAu
+193	81	138	t	2020-03-07 07:02:12.431472+05:30	2020-03-07 07:02:12.431472+05:30	/chatroom#Uj5i3K-oKi6rUJe6AAAv
+188	76	138	t	2020-03-07 06:50:13.81711+05:30	2020-03-07 06:50:13.81711+05:30	/chatroom#qyVlNyNmg5c1eNwrAAAj
+149	37	132	t	2020-03-07 01:46:05.301858+05:30	2020-03-07 01:46:05.301858+05:30	Ruv-_pvzqiheBF3qAABo
+150	82	132	t	2020-03-07 01:51:32.078666+05:30	2020-03-07 01:51:32.078666+05:30	8zUqNLCSsH6tAUrKAABs
+132	37	117	t	2020-01-16 22:23:14.026605+05:30	2020-01-16 22:23:14.026605+05:30	j0-mvcWks2ff4T6lAABw
+185	72	0	t	2020-03-07 06:48:40.970941+05:30	2020-03-07 06:48:40.970941+05:30	/chatroom#YfXfy2ZGypDHYT87AAAO
+186	72	137	t	2020-03-07 06:48:41.352908+05:30	2020-03-07 06:48:41.352908+05:30	/chatroom#D51pB1BUwtCp0VLbAAAP
+168	71	0	t	2020-03-07 05:02:51.005956+05:30	2020-03-07 05:02:51.005956+05:30	z7zMkJb8F-0YQAQTAAAR
+169	70	0	t	2020-03-07 05:03:29.661588+05:30	2020-03-07 05:03:29.661588+05:30	BTIMx4Zw8_OA2bktAAAT
+135	37	109	t	2020-01-18 03:38:01.721201+05:30	2020-01-18 03:38:01.721201+05:30	80D00_45qxp2zT60AABf
+142	37	107	t	2020-02-04 17:40:01.794807+05:30	2020-02-04 17:40:01.794807+05:30	bWPJs8gd2NW43_3vAABt
+133	37	103	t	2020-01-18 02:37:29.965829+05:30	2020-01-18 02:37:29.965829+05:30	/chatroom#eeJHDRUlQldm5nd6AAAM
+194	37	139	t	2020-03-09 08:16:24.145736+05:30	2020-03-09 08:16:24.145736+05:30	/chatroom#vleNIVEDioz10yNbAAAE
+177	37	136	t	2020-03-07 05:21:55.631492+05:30	2020-03-07 05:21:55.631492+05:30	/chatroom#AzVTmrc-OyvpSvV8AAAN
+159	76	0	t	2020-03-07 04:26:39.311567+05:30	2020-03-07 04:26:39.311567+05:30	/chatroom#3IT3rGpMyeGapiQFAAAj
+146	76	131	t	2020-03-07 01:36:40.478533+05:30	2020-03-07 01:36:40.478533+05:30	/chatroom#puEmG31qzIA_xGSLAAAl
+155	37	0	t	2020-03-07 03:37:33.363802+05:30	2020-03-07 03:37:33.363802+05:30	/chatroom#dyR2uiVhgq3RmeXXAAAM
+147	37	131	t	2020-03-07 01:39:11.75532+05:30	2020-03-07 01:39:11.75532+05:30	/chatroom#afSUFvXOwGjddSLcAAAT
+\.
+
+
+--
+-- Data for Name: departments; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.departments (id, name, workspace_id, created_by, created_at, updated_at, "default") FROM stdin;
+1	test1	33	12	2019-12-25 18:10:30.982329+05:30	2019-12-25 18:10:30.982329+05:30	f
+5	SALES	72	79	2020-01-16 15:34:27.170542+05:30	2020-01-16 15:34:27.170542+05:30	t
+9	tesb1	24	37	2020-03-09 05:38:01.41606+05:30	2020-03-09 05:38:01.41606+05:30	f
+3	marketing	24	34	2020-01-05 01:35:44.809451+05:30	2020-01-05 01:35:44.809451+05:30	f
+2	sales2	24	34	2020-01-05 01:34:51.144139+05:30	2020-01-05 01:34:51.144139+05:30	f
+7	testdeptnew	24	37	2020-03-04 17:47:31.502273+05:30	2020-03-04 17:47:31.502273+05:30	f
+4	marketing	24	34	2020-01-05 01:36:03.923956+05:30	2020-01-05 01:36:03.923956+05:30	f
+8	testba	24	37	2020-03-09 05:37:10.245333+05:30	2020-03-09 05:37:10.245333+05:30	f
+6	testdept	24	37	2020-03-04 17:47:05.21755+05:30	2020-03-04 17:47:05.21755+05:30	t
+10	Rohandept	24	37	2020-03-09 05:53:37.299695+05:30	2020-03-09 05:53:37.299695+05:30	f
+\.
+
+
+--
+-- Data for Name: message-meta; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."message-meta" (id, message_id, meta_key, meta_value) FROM stdin;
+\.
+
+
+--
+-- Data for Name: messages; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.messages (id, message, message_type, sender_id, channel_id, deleted, created_at, updated_at, receiver_id, workspace_id, is_pinned, pinned_by, pinned_at, read_status, file_upload_details, thumbnail_blob, file_upload_service_method, quoted_msg_id, is_tagged) FROM stdin;
+490	hey	TEXT	76	138	f	2020-03-07 07:01:38.958407+05:30	2020-03-07 07:01:38.958407+05:30	81	24	f	\N	\N	t	\N	\N	\N	\N	f
+493	kks hey	TEXT	37	131	f	2020-03-09 07:13:25.519465+05:30	2020-03-09 07:13:25.519465+05:30	76	24	f	\N	\N	f	\N	\N	\N	452	f
+495	yeup@	TEXT	37	131	f	2020-03-09 07:47:45.322508+05:30	2020-03-09 07:47:45.322508+05:30	76	24	f	\N	\N	f	\N	\N	\N	\N	f
+497	sss	TEXT	37	131	f	2020-03-09 07:50:54.249119+05:30	2020-03-09 07:50:54.249119+05:30	76	24	f	\N	\N	f	\N	\N	\N	\N	f
+425	jsjs	TEXT	37	94	f	2020-01-29 14:44:12.462781+05:30	2020-01-29 14:44:12.462781+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+426	qqeqwe	TEXT	37	94	f	2020-01-29 14:44:33.267285+05:30	2020-01-29 14:44:33.267285+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+427	jsjs ssss	TEXT	37	94	f	2020-02-10 03:25:16.001522+05:30	2020-02-10 03:25:16.001522+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+428	jsjs ssss quoted	TEXT	37	94	f	2020-02-10 03:25:37.356672+05:30	2020-02-10 03:25:37.356672+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+499	sns@	TEXT	37	131	f	2020-03-09 07:51:46.769588+05:30	2020-03-09 07:51:46.769588+05:30	76	24	f	\N	\N	f	\N	\N	\N	\N	f
+429	jsjs ssss quoted true	TEXT	37	94	f	2020-02-10 03:46:37.502343+05:30	2020-02-10 03:46:37.502343+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+430	jsjs ssss quoted true ddd	TEXT	37	94	f	2020-02-10 03:47:44.778551+05:30	2020-02-10 03:47:44.778551+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+410	hey demonew	TEXT	37	94	f	2020-01-15 01:31:56.316342+05:30	2020-01-15 01:31:56.316342+05:30	34	24	f	\N	\N	t	\N	\N	\N	\N	f
+411	hey rhancm	TEXT	34	94	f	2020-01-15 01:32:04.533276+05:30	2020-01-15 01:32:04.533276+05:30	37	24	f	\N	\N	t	\N	\N	\N	\N	f
+412	fule	FILE	37	94	f	2020-01-15 17:47:40.113391+05:30	2020-01-15 17:47:40.113391+05:30	34	24	f	\N	\N	f	{"id": "1iPW3mwNkmJM2-uI7BpSI2ilJ3jqUIxQk", "kind": "drive#file", "name": "TEST", "mimeType": "image/png", "hasThumbnail": true, "thumbnailLink": "https://lh3.googleusercontent.com/nDl8BvYavQ9VXE0B1c3S2PQ1lI2nt1H5-KqbfidU7HeyJ-WI96G5rMrxKUs7Pq_knUjLHxRSeH4=s220", "fileUploadMethod": "GOOGLE-DRIVE"}	\N	GOOGLE-DRIVE	\N	f
+413	text	FILE	37	94	f	2020-01-15 17:56:00.162565+05:30	2020-01-15 17:56:00.162565+05:30	34	24	f	\N	\N	f	{"id": "1OOXQwurwkgUCAfUfbbcstOL8QzWrBHAV", "kind": "drive#file", "name": "TEST", "mimeType": "image/jpeg", "hasThumbnail": true, "thumbnailLink": "https://lh3.googleusercontent.com/OGY_dMh1tlO910I46Z4qebm-h0CR1Nmp2_5zaGxQGyjZAWWsPjVth9_YThs1-941T4p0mQcJa2I=s220", "fileUploadMethod": "GOOGLE-DRIVE"}	\N	GOOGLE-DRIVE	\N	f
+414	est	FILE	37	94	f	2020-01-15 17:56:45.913125+05:30	2020-01-15 17:56:45.913125+05:30	34	24	f	\N	\N	f	{"id": "10jIokKatvx8IxnlF3BrBgGVgPnUyQEb-", "kind": "drive#file", "name": "TEST", "mimeType": "image/png", "hasThumbnail": true, "thumbnailLink": "https://lh3.googleusercontent.com/3mhDSH-Bgss3xHAoGjYimXfS1ty9WSRl8P3mVELmzILWEV4_6hJV8l9JqTtEHHqAx1aASgfkWCU=s220", "fileUploadMethod": "GOOGLE-DRIVE"}	\N	GOOGLE-DRIVE	\N	f
+415	hey	TEXT	37	94	f	2020-01-15 17:59:19.237475+05:30	2020-01-15 17:59:19.237475+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+416	No file description	FILE	37	94	f	2020-01-18 05:30:58.53583+05:30	2020-01-18 05:30:58.53583+05:30	34	24	f	\N	\N	f	{"id": "1jaQvYZ_fVIKVVTvNHxw0HBKHcPtym0Za", "kind": "drive#file", "name": "TEST", "mimeType": "image/png", "hasThumbnail": true, "thumbnailLink": "https://lh3.googleusercontent.com/S4S2y8lvNaB88pqk5f2pol6LLJCh3FrSsZ-WdEMisTKuImAAZ1JW49xZ7PgGeGPvi3rq6yKCklc=s220", "fileUploadMethod": "GOOGLE-DRIVE"}	\N	GOOGLE-DRIVE	\N	f
+417	No file description	FILE	37	94	f	2020-01-18 05:32:33.462595+05:30	2020-01-18 05:32:33.462595+05:30	34	24	f	\N	\N	f	{"id": "1eyuwwO7bzGLGP7a0T19eL4-Z4UaiUpKh", "kind": "drive#file", "name": "TEST", "mimeType": "image/png", "hasThumbnail": true, "thumbnailLink": "https://lh3.googleusercontent.com/8KCqOyBdlCJQtmXwqA3jRM4tH1RllHRptxRMbXLugwyN3U1T0-EE5d8mMCQtcgWsOc4iRSBMmKM=s220", "fileUploadMethod": "GOOGLE-DRIVE"}	\N	GOOGLE-DRIVE	\N	f
+418	No file description	FILE	37	94	f	2020-01-18 06:00:17.043458+05:30	2020-01-18 06:00:17.043458+05:30	34	24	f	\N	\N	f	{"id": "19jATs3_EYBLiZyweCPjqaS4WNw95tYrJ", "kind": "drive#file", "name": "TEST", "fileName": "file-1579307413285.jpg", "mimeType": "image/jpeg", "hasThumbnail": true, "thumbnailLink": "https://lh3.googleusercontent.com/HAr0pXE_gHm1J2KwgORbi07dlUMxIH6b_xxk8DTTPDdlCoPPGJc6_jkX-fb6ldeYkvyRdVl4czY=s220", "fileUploadMethod": "GOOGLE-DRIVE"}	\N	GOOGLE-DRIVE	\N	f
+419	No file description	FILE	37	94	f	2020-01-18 06:54:56.976485+05:30	2020-01-18 06:54:56.976485+05:30	34	24	f	\N	\N	f	{"id": "id:bnZXIhcyXxAAAAAAAAAAag", "rev": "0159c5fed0b7dc3000000018cfdfd20", "name": "file-1579310693877.jpg", "size": 482207, "fileName": "file-1579310693877.jpg", "path_lower": "/ubblu/uploads/file-1579310693877.jpg", "content_hash": "6c2bbd18568e1d252760e826b8ef2a19cdd4232015be7873f3959d921f25e544", "hasThumbnail": true, "path_display": "/ubblu/uploads/file-1579310693877.jpg", "thumbnailLink": "http://localhost:8080/dropbox-uploads/file-1579310696686.jpg", "client_modified": "2020-01-18T01:24:56Z", "is_downloadable": true, "server_modified": "2020-01-18T01:24:56Z", "fileUploadMethod": "DROPBOX"}	\N	DROPBOX	\N	f
+420	No file description	FILE	37	94	f	2020-01-18 07:03:33.538197+05:30	2020-01-18 07:03:33.538197+05:30	34	24	f	\N	\N	f	{"id": "id:bnZXIhcyXxAAAAAAAAAAaw", "rev": "0159c600bd5a062000000018cfdfd20", "name": "file-1579311211626.jpg", "size": 482207, "fileName": "file-1579311211626.jpg", "mimeType": "image/jpeg", "path_lower": "/ubblu/uploads/file-1579311211626.jpg", "content_hash": "6c2bbd18568e1d252760e826b8ef2a19cdd4232015be7873f3959d921f25e544", "hasThumbnail": true, "path_display": "/ubblu/uploads/file-1579311211626.jpg", "thumbnailLink": "http://localhost:8080/dropbox-uploads/file-1579311213208.jpg", "client_modified": "2020-01-18T01:33:32Z", "is_downloadable": true, "server_modified": "2020-01-18T01:33:32Z", "fileUploadMethod": "DROPBOX"}	\N	DROPBOX	\N	f
+421	dsva	TEXT	37	94	f	2020-01-29 14:22:19.962643+05:30	2020-01-29 14:22:19.962643+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+422	test?	TEXT	37	94	f	2020-01-29 14:22:57.999718+05:30	2020-01-29 14:22:57.999718+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+423	hhe	TEXT	37	94	f	2020-01-29 14:25:47.445688+05:30	2020-01-29 14:25:47.445688+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+424	ss	TEXT	37	94	f	2020-01-29 14:39:44.409954+05:30	2020-01-29 14:39:44.409954+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+431	jsjs ssss quoted true ddd llks	TEXT	37	94	f	2020-02-10 03:53:05.553021+05:30	2020-02-10 03:53:05.553021+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+438	rohan qyote&#160;quyoted firts time	TEXT	37	94	t	2020-02-10 04:06:58.163569+05:30	2020-02-10 04:06:58.163569+05:30	34	24	f	\N	\N	f	\N	\N	\N	437	f
+437	rohan qyote	TEXT	37	94	t	2020-02-10 04:06:29.498982+05:30	2020-02-10 04:06:29.498982+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+432	jsjs&#160;ssss&#160;quoted&#160;true&#160;ddd&#160;llksss	TEXT	37	94	t	2020-02-10 03:53:51.405755+05:30	2020-02-10 03:53:51.405755+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+439	rohan	TEXT	37	94	t	2020-02-10 05:50:31.6574+05:30	2020-02-10 05:50:31.6574+05:30	34	24	f	\N	\N	f	\N	\N	\N	436	f
+436	hah&#160;yqiu	TEXT	37	94	t	2020-02-10 03:59:53.614962+05:30	2020-02-10 03:59:53.614962+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+435	hah	TEXT	37	94	t	2020-02-10 03:59:46.313061+05:30	2020-02-10 03:59:46.313061+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+434	ha	TEXT	37	94	t	2020-02-10 03:55:56.119232+05:30	2020-02-10 03:55:56.119232+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+433	jsjs&#160;ssss&#160;quoted&#160;true&#160;ddd&#160;llksssmjks	TEXT	37	94	t	2020-02-10 03:55:50.401059+05:30	2020-02-10 03:55:50.401059+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+440	test	TEXT	37	94	t	2020-02-10 06:21:01.576658+05:30	2020-02-10 06:21:01.576658+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+441	ssjjs	TEXT	37	94	f	2020-02-10 07:08:32.774107+05:30	2020-02-10 07:08:32.774107+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+442	hihui	TEXT	37	94	f	2020-02-10 07:14:41.015186+05:30	2020-02-10 07:14:41.015186+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+443	hi	TEXT	37	103	f	2020-02-21 16:53:23.071797+05:30	2020-02-21 16:53:23.071797+05:30	103	24	f	\N	\N	f	\N	\N	\N	\N	f
+444	h	TEXT	37	94	f	2020-02-26 17:32:35.844909+05:30	2020-02-26 17:32:35.844909+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+445	hi	TEXT	37	94	f	2020-02-26 17:33:41.570269+05:30	2020-02-26 17:33:41.570269+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+446	hy	TEXT	37	94	f	2020-03-06 04:51:46.979482+05:30	2020-03-06 04:51:46.979482+05:30	34	24	f	\N	\N	f	\N	\N	\N	\N	f
+447	hey chmap	TEXT	76	131	f	2020-03-07 01:36:43.618969+05:30	2020-03-07 01:36:43.618969+05:30	37	24	f	\N	\N	t	\N	\N	\N	\N	f
+448	yeah firefox	TEXT	37	131	f	2020-03-07 01:40:27.949111+05:30	2020-03-07 01:40:27.949111+05:30	76	24	f	\N	\N	t	\N	\N	\N	\N	f
+450	hey	TEXT	37	132	f	2020-03-07 01:46:08.595379+05:30	2020-03-07 01:46:08.595379+05:30	82	24	f	\N	\N	t	\N	\N	\N	\N	f
+451	jj	TEXT	37	132	f	2020-03-07 01:46:48.27129+05:30	2020-03-07 01:46:48.27129+05:30	82	24	f	\N	\N	t	\N	\N	\N	\N	f
+452	kks	TEXT	37	131	f	2020-03-07 01:48:44.382383+05:30	2020-03-07 01:48:44.382383+05:30	76	24	f	\N	\N	t	\N	\N	\N	\N	f
+453	?	TEXT	37	132	f	2020-03-07 01:50:02.439097+05:30	2020-03-07 01:50:02.439097+05:30	82	24	f	\N	\N	t	\N	\N	\N	\N	f
+454	s	TEXT	37	132	f	2020-03-07 01:50:26.507622+05:30	2020-03-07 01:50:26.507622+05:30	82	24	f	\N	\N	t	\N	\N	\N	\N	f
+455	hi roh786	TEXT	37	119	f	2020-03-07 03:37:58.958993+05:30	2020-03-07 03:37:58.958993+05:30	73	24	f	\N	\N	t	\N	\N	\N	\N	f
+456	hue man	TEXT	37	119	f	2020-03-07 03:38:47.974829+05:30	2020-03-07 03:38:47.974829+05:30	73	24	f	\N	\N	t	\N	\N	\N	\N	f
+457	welcome	TEXT	37	100	f	2020-03-07 03:42:33.585096+05:30	2020-03-07 03:42:33.585096+05:30	36	24	f	\N	\N	t	\N	\N	\N	\N	f
+459	sss	TEXT	36	100	f	2020-03-07 04:28:59.196183+05:30	2020-03-07 04:28:59.196183+05:30	37	24	f	\N	\N	f	\N	\N	\N	\N	f
+458	hey man	TEXT	76	133	f	2020-03-07 04:27:12.353976+05:30	2020-03-07 04:27:12.353976+05:30	36	24	f	\N	\N	t	\N	\N	\N	\N	f
+460	hsjs	TEXT	76	133	f	2020-03-07 04:29:52.370758+05:30	2020-03-07 04:29:52.370758+05:30	36	24	f	\N	\N	t	\N	\N	\N	\N	f
+491	whatsuo	TEXT	76	138	f	2020-03-07 07:02:04.867046+05:30	2020-03-07 07:02:04.867046+05:30	81	24	f	\N	\N	t	\N	\N	\N	\N	f
+492	yeah	TEXT	81	138	f	2020-03-07 07:02:14.171138+05:30	2020-03-07 07:02:14.171138+05:30	76	24	f	\N	\N	f	\N	\N	\N	\N	f
+494	hey@	TEXT	37	131	f	2020-03-09 07:47:09.057631+05:30	2020-03-09 07:47:09.057631+05:30	76	24	f	\N	\N	f	\N	\N	\N	\N	f
+496	hehye @	TEXT	37	131	f	2020-03-09 07:49:38.453649+05:30	2020-03-09 07:49:38.453649+05:30	76	24	f	\N	\N	f	\N	\N	\N	\N	f
+498	sns@	TEXT	37	131	f	2020-03-09 07:51:12.537833+05:30	2020-03-09 07:51:12.537833+05:30	76	24	f	\N	\N	f	\N	\N	\N	\N	f
+500	ss@	TEXT	37	131	f	2020-03-09 07:52:16.77805+05:30	2020-03-09 07:52:16.77805+05:30	76	24	f	\N	\N	f	\N	\N	\N	\N	f
+501	sns@	TEXT	37	131	f	2020-03-09 07:52:41.215482+05:30	2020-03-09 07:52:41.215482+05:30	76	24	f	\N	\N	f	\N	\N	\N	\N	f
+502	sns@	TEXT	37	131	f	2020-03-09 07:53:30.822705+05:30	2020-03-09 07:53:30.822705+05:30	76	24	f	\N	\N	f	\N	\N	\N	\N	t
+503	hey @	TEXT	37	139	f	2020-03-09 08:16:26.96701+05:30	2020-03-09 08:16:26.96701+05:30	139	24	f	\N	\N	f	\N	\N	\N	\N	t
+\.
+
+
+--
+-- Data for Name: rooms; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.rooms (id, workspace_id, name, active, type, created_by, created_at, updated_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: user-channel-relationships; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."user-channel-relationships" (id, user_id, channel_id, status, is_receive_mail_notification, read_status, muted, starred) FROM stdin;
+75	34	95	MEMBER	f	f	f	f
+230	76	131	MEMBER	f	f	f	f
+77	34	96	MEMBER	f	f	f	f
+78	35	96	MEMBER	f	f	f	f
+231	37	131	MEMBER	f	f	f	f
+233	82	132	MEMBER	f	f	f	f
+80	35	97	MEMBER	f	f	f	f
+82	34	98	MEMBER	f	f	f	f
+83	35	98	MEMBER	f	f	f	f
+84	36	98	MEMBER	f	f	f	f
+85	70	98	MEMBER	f	f	f	f
+86	71	98	MEMBER	f	f	f	f
+88	73	98	MEMBER	f	f	f	f
+89	74	98	MEMBER	f	f	f	f
+90	76	93	MEMBER	f	f	f	f
+91	76	94	MEMBER	f	f	f	f
+92	76	95	MEMBER	f	f	f	f
+93	76	96	MEMBER	f	f	f	f
+94	76	97	MEMBER	f	f	f	f
+95	76	98	MEMBER	f	f	f	f
+96	76	99	MEMBER	f	f	f	f
+97	34	99	MEMBER	f	f	f	f
+99	36	100	MEMBER	f	f	f	f
+241	37	136	MEMBER	f	f	f	f
+244	76	138	MEMBER	f	f	f	f
+103	94	102	MEMBER	f	f	f	f
+247	37	139	ADMIN	f	f	f	f
+251	71	139	MEMBER	f	f	f	f
+253	81	139	MEMBER	f	f	f	f
+109	34	107	MEMBER	f	f	f	f
+110	35	107	MEMBER	f	f	f	f
+254	70	139	ADMIN	f	f	f	f
+256	82	139	MEMBER	f	f	f	f
+114	34	110	MEMBER	f	f	f	f
+115	35	110	MEMBER	f	f	f	f
+116	71	110	MEMBER	f	f	f	f
+257	37	140	ADMIN	f	f	f	f
+118	34	111	MEMBER	f	f	f	f
+119	35	111	MEMBER	f	f	f	f
+121	34	112	MEMBER	f	f	f	f
+122	35	112	MEMBER	f	f	f	f
+123	36	112	MEMBER	f	f	f	f
+124	77	113	MEMBER	f	f	f	f
+125	77	113	MEMBER	f	f	f	f
+126	79	114	MEMBER	f	f	f	f
+127	79	114	MEMBER	f	f	f	f
+72	74	93	MEMBER	f	f	f	f
+74	34	94	MEMBER	f	f	f	f
+139	81	98	MEMBER	f	f	f	f
+140	81	103	MEMBER	f	f	f	f
+141	81	106	MEMBER	f	f	f	f
+142	81	107	MEMBER	f	f	f	f
+143	81	109	MEMBER	f	f	f	f
+144	81	110	MEMBER	f	f	f	f
+145	81	111	MEMBER	f	f	f	f
+146	81	112	MEMBER	f	f	f	f
+147	81	104	MEMBER	f	f	f	f
+148	81	105	MEMBER	f	f	f	f
+149	81	115	MEMBER	f	f	f	f
+150	82	94	MEMBER	f	f	f	f
+151	82	95	MEMBER	f	f	f	f
+152	82	96	MEMBER	f	f	f	f
+153	82	97	MEMBER	f	f	f	f
+154	82	99	MEMBER	f	f	f	f
+155	82	100	MEMBER	f	f	f	f
+156	82	101	MEMBER	f	f	f	f
+157	82	102	MEMBER	f	f	f	f
+158	82	93	MEMBER	f	f	f	f
+159	82	98	MEMBER	f	f	f	f
+160	82	103	MEMBER	f	f	f	f
+161	82	106	MEMBER	f	f	f	f
+162	82	107	MEMBER	f	f	f	f
+163	82	109	MEMBER	f	f	f	f
+164	82	110	MEMBER	f	f	f	f
+165	82	111	MEMBER	f	f	f	f
+166	82	112	MEMBER	f	f	f	f
+167	82	104	MEMBER	f	f	f	f
+168	82	105	MEMBER	f	f	f	f
+169	82	115	MEMBER	f	f	f	f
+170	83	94	MEMBER	f	f	f	f
+171	83	95	MEMBER	f	f	f	f
+172	83	96	MEMBER	f	f	f	f
+173	83	97	MEMBER	f	f	f	f
+174	83	99	MEMBER	f	f	f	f
+175	83	100	MEMBER	f	f	f	f
+176	83	101	MEMBER	f	f	f	f
+177	83	102	MEMBER	f	f	f	f
+178	83	93	MEMBER	f	f	f	f
+179	83	98	MEMBER	f	f	f	f
+180	83	103	MEMBER	f	f	f	f
+181	83	106	MEMBER	f	f	f	f
+182	83	107	MEMBER	f	f	f	f
+183	83	109	MEMBER	f	f	f	f
+184	83	110	MEMBER	f	f	f	f
+185	83	111	MEMBER	f	f	f	f
+186	83	112	MEMBER	f	f	f	f
+187	83	104	MEMBER	f	f	f	f
+188	83	105	MEMBER	f	f	f	f
+189	83	115	MEMBER	f	f	f	f
+191	83	116	MEMBER	f	f	f	f
+192	36	116	MEMBER	f	f	f	f
+199	73	119	MEMBER	f	f	f	f
+195	83	117	MEMBER	f	f	f	f
+197	70	118	MEMBER	f	f	f	f
+205	34	123	MEMBER	f	f	f	f
+206	35	123	MEMBER	f	f	f	f
+207	36	123	MEMBER	f	f	f	f
+208	70	123	MEMBER	f	f	f	f
+210	34	124	MEMBER	f	f	f	f
+211	35	124	MEMBER	f	f	f	f
+212	36	124	MEMBER	f	f	f	f
+213	70	124	MEMBER	f	f	f	f
+227	36	130	MEMBER	f	f	f	f
+228	72	130	MEMBER	f	f	f	f
+229	73	130	MEMBER	f	f	f	f
+198	37	119	MEMBER	f	f	f	f
+79	37	97	MEMBER	f	f	f	f
+98	37	100	MEMBER	f	f	f	f
+100	37	101	MEMBER	f	f	f	f
+102	37	102	MEMBER	f	f	f	f
+106	37	105	ADMIN	f	f	f	f
+108	37	107	ADMIN	f	f	f	f
+113	37	110	ADMIN	f	f	f	f
+117	37	111	ADMIN	f	f	f	f
+128	37	115	MEMBER	f	f	f	f
+71	37	93	MEMBER	f	f	f	f
+194	37	117	MEMBER	f	f	f	f
+73	37	94	MEMBER	f	f	f	t
+196	37	118	MEMBER	f	f	f	f
+200	37	120	MEMBER	f	f	f	f
+104	37	103	MEMBER	f	f	f	f
+204	37	123	ADMIN	f	f	f	f
+209	37	124	ADMIN	f	f	f	f
+215	37	106	MEMBER	f	f	f	f
+221	37	125	ADMIN	f	f	f	f
+222	37	126	ADMIN	f	f	f	f
+223	37	127	ADMIN	f	f	f	f
+224	37	128	ADMIN	f	f	f	f
+225	37	129	ADMIN	f	f	f	f
+226	37	130	ADMIN	f	f	f	f
+232	37	132	MEMBER	f	f	f	f
+234	76	133	MEMBER	f	f	f	f
+235	36	133	MEMBER	f	f	f	f
+237	76	134	MEMBER	f	f	f	f
+239	37	135	MEMBER	f	f	f	f
+242	76	137	MEMBER	f	f	f	f
+248	73	139	MEMBER	f	f	f	f
+249	34	139	MEMBER	f	f	f	f
+250	81	139	MEMBER	f	f	f	f
+252	74	139	MEMBER	f	f	f	f
+255	36	139	ADMIN	f	f	f	f
+\.
+
+
+--
+-- Data for Name: user-message-meta; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."user-message-meta" (id, user_id, other_user_id, channel_id, workspace_id, notes, last_message_id, is_muted, is_tagged, is_starred) FROM stdin;
+\.
+
+
+--
+-- Data for Name: user-meta; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."user-meta" (id, user_id, meta_key, meta_value) FROM stdin;
+1	11	signupStep	1
+3	12	signupStep	1
+72	76	invalidAttemptCount	0
+75	82	invalidAttemptCount	0
+76	83	invalidAttemptCount	0
+77	73	invalidAttemptCount	0
+78	36	invalidAttemptCount	0
+5	13	signupStep	1
+6	13	invalidAttemptCount	0
+7	14	signupStep	1
+79	35	invalidAttemptCount	0
+81	71	invalidAttemptCount	0
+74	70	invalidAttemptCount	0
+80	72	invalidAttemptCount	0
+73	81	invalidAttemptCount	0
+63	37	invalidAttemptCount	0
+2	11	invalidAttemptCount	0
+8	16	signupStep	1
+9	17	signupStep	1
+10	18	signupStep	1
+11	19	signupStep	1
+12	20	signupStep	1
+13	21	signupStep	1
+14	22	signupStep	1
+15	26	signupStep	5
+16	27	signupStep	5
+17	28	signupStep	1
+18	29	signupStep	1
+19	31	signupStep	1
+20	32	signupStep	1
+21	33	signupStep	1
+22	34	signupStep	1
+23	35	signupStep	5
+24	36	signupStep	5
+25	37	signupStep	5
+58	70	signupStep	5
+59	71	signupStep	5
+60	72	signupStep	5
+61	73	signupStep	5
+62	74	signupStep	5
+4	12	invalidAttemptCount	0
+65	76	signupStep	5
+64	34	invalidAttemptCount	0
+66	77	signupStep	1
+67	78	signupStep	1
+68	79	signupStep	1
+69	81	signupStep	5
+70	82	signupStep	5
+71	83	signupStep	5
+\.
+
+
+--
+-- Data for Name: user-user-relationships; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."user-user-relationships" (id, user_id, other_user_id, status) FROM stdin;
+\.
+
+
+--
+-- Data for Name: user-workspace-relationships; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."user-workspace-relationships" (id, user_id, workspace_id, status, department_id, is_suspended, ubblu_tips, ubblu_news_announcement, notification_frequency, email_notifications, is_deleted, availability) FROM stdin;
+71	73	24	SUPERADMIN	\N	f	t	t	0	15	f	t
+26	34	24	SUPERADMIN	\N	f	t	t	0	15	f	t
+3	13	3	NONE	\N	f	t	t	0	15	f	t
+5	30	33	ADMIN	\N	f	t	t	0	15	f	t
+4	1	33	SUPERADMIN	\N	f	t	t	0	15	f	t
+2	12	33	SUPERADMIN	1	f	t	t	0	15	f	t
+1	11	33	SUPERADMIN	1	f	t	t	0	15	f	t
+6	16	6	SUPERADMIN	\N	f	t	t	0	15	f	t
+7	17	7	SUPERADMIN	\N	f	t	t	0	15	f	t
+8	18	8	SUPERADMIN	\N	f	t	t	0	15	f	t
+9	19	9	SUPERADMIN	\N	f	t	t	0	15	f	t
+10	20	10	SUPERADMIN	\N	f	t	t	0	15	f	t
+11	21	11	SUPERADMIN	\N	f	t	t	0	15	f	t
+12	22	12	SUPERADMIN	\N	f	t	t	0	15	f	t
+13	23	13	SUPERADMIN	\N	f	t	t	0	15	f	t
+14	24	14	SUPERADMIN	\N	f	t	t	0	15	f	t
+15	25	15	SUPERADMIN	\N	f	t	t	0	15	f	t
+16	26	16	SUPERADMIN	\N	f	t	t	0	15	f	t
+17	26	1	SUPERADMIN	\N	f	t	t	0	15	f	t
+18	27	17	SUPERADMIN	\N	f	t	t	0	15	f	t
+19	27	1	SUPERADMIN	\N	f	t	t	0	15	f	t
+20	28	18	SUPERADMIN	\N	f	t	t	0	15	f	t
+21	29	19	SUPERADMIN	\N	f	t	t	0	15	f	t
+22	31	20	SUPERADMIN	\N	f	t	t	0	15	f	t
+23	32	21	SUPERADMIN	\N	f	t	t	0	15	f	t
+24	33	22	SUPERADMIN	\N	f	t	t	0	15	f	t
+25	34	23	SUPERADMIN	\N	f	t	t	0	15	f	t
+27	35	25	SUPERADMIN	\N	f	t	t	0	15	f	t
+29	36	26	SUPERADMIN	\N	f	t	t	0	15	f	t
+31	37	27	SUPERADMIN	\N	f	t	t	0	15	f	t
+64	70	60	SUPERADMIN	\N	f	t	t	0	15	f	t
+66	71	61	SUPERADMIN	\N	f	t	t	0	15	f	t
+68	72	62	SUPERADMIN	\N	f	t	t	0	15	f	t
+70	73	63	SUPERADMIN	\N	f	t	t	0	15	f	t
+72	74	64	SUPERADMIN	\N	f	t	t	0	15	f	t
+74	75	65	SUPERADMIN	\N	f	t	t	0	15	f	t
+75	76	66	SUPERADMIN	\N	f	t	t	0	15	f	t
+77	77	67	SUPERADMIN	\N	f	t	t	0	15	f	t
+78	77	68	SUPERADMIN	\N	f	t	t	0	15	f	t
+79	78	69	SUPERADMIN	\N	f	t	t	0	15	f	t
+80	78	70	SUPERADMIN	\N	f	t	t	0	15	f	t
+81	79	71	SUPERADMIN	\N	f	t	t	0	15	f	t
+82	79	72	SUPERADMIN	\N	f	t	t	0	15	f	t
+83	80	73	SUPERADMIN	\N	f	t	t	0	15	f	t
+84	81	74	SUPERADMIN	\N	f	t	t	0	15	f	t
+85	81	24	GUEST USER	\N	f	t	t	0	15	f	t
+86	82	75	SUPERADMIN	\N	f	t	t	0	15	f	t
+87	82	24	GUEST USER	\N	f	t	t	0	15	f	t
+88	83	76	SUPERADMIN	\N	f	t	t	0	15	f	t
+89	83	24	GUEST USER	\N	f	t	t	0	15	f	t
+28	35	24	SUPERADMIN	\N	t	t	t	0	15	f	t
+67	71	24	SUPERADMIN	\N	t	t	t	0	15	f	t
+73	74	24	SUPERADMIN	\N	f	t	t	0	15	f	t
+65	70	24	SUPERADMIN	\N	t	t	t	0	15	f	t
+32	37	24	SUPERADMIN	\N	f	t	t	0	60	f	t
+30	36	24	SUPERADMIN	\N	t	t	t	0	15	f	t
+69	72	24	SUPERADMIN	\N	f	t	t	0	15	f	t
+76	76	24	EMPLOYEE	\N	t	t	t	0	15	f	t
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.users (id, username, email, password, created_at, updated_at, name, department_id, timezone, note, profile_image, availability, google_access_token, dropbox_access_token, cloud_storage) FROM stdin;
+1	rohanbie	rrohanrocks10@gmail.com	shahshs	2019-11-23 21:16:08.509516+05:30	2019-11-23 21:16:08.509516+05:30	rohan	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+2	shubh	shubhamnagora@gmail.com	shahshs	2019-11-23 21:16:35.931262+05:30	2019-11-23 21:16:35.931262+05:30	shubham	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+3	awanish	awanish@gmail.com	shahshs	2019-11-23 21:16:46.04242+05:30	2019-11-23 21:16:46.04242+05:30	avanish	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+13	rohan1dec	rohan1_dec@imailt.com	$2b$10$OMr0yWDfpXHliNbMgpaoDOsyatCqwcqN5licUiyVGXqe0la0vQYDq	2019-12-01 00:23:59.753493+05:30	2019-12-01 00:23:59.753493+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+14	rohan2dec	rohan2_dec@imailt.com	$2b$10$eOPrNxaJTYZEW2O9qtQWdOvFgyH9cczLG0WWUpzP/aOx5d4W0GN7O	2019-12-01 02:11:07.539641+05:30	2019-12-01 02:11:07.539641+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+30	test4	rohan3@xmail2.net	$2b$10$wcEY9.hX0uBlvR/cfm/KiOGxLXxlcnE7dXSpGzrgAArN.jx89Lz72	2019-11-24 13:21:45.028+05:30	2019-11-24 13:21:45.028+05:30	test4	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+15	gedagir575@email5.net	gedagir575@email5.net	$2b$10$yjXN2f9z0pIE/fN8YeJ4FeMIcSdS27nHb92qZExF0Koq7dh1Rm5Nm	2019-12-25 18:11:27.839455+05:30	2019-12-25 18:11:27.839455+05:30	Rohan Kumar	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+12	test1	rohan2@xmail2.net	$2b$10$wcEY9.hX0uBlvR/cfm/KiOGxLXxlcnE7dXSpGzrgAArN.jx89Lz72	2019-11-24 13:21:45.028311+05:30	2019-11-24 13:21:45.028311+05:30	test2	\N	\N	newsa	\N	t	\N	\N	GOOGLE-DRIVE
+11	rohan	rohan1@4tmail.net	$2b$10$Xd1Myj.e5D/1iFz048vnuO9Qf3gKwpMN3KK1RycMr1gwmsdBXNRP.	2019-11-24 09:27:51.58374+05:30	2019-11-24 09:27:51.58374+05:30	test1	\N	\N	shit	\N	t	\N	\N	GOOGLE-DRIVE
+16	newuser1	rohan2@janmail.org	$2b$10$rqoEXu898BYdMiC0X6UjjOAkOooYnSrlGZzyYNd.sirKR5krqHgWy	2020-01-04 18:41:46.263157+05:30	2020-01-04 18:41:46.263157+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+17	rohanbietest	rohan1@janmail.org	$2b$10$DUo62imwPX7nPNHIA6td7unkmt7OKVGQ2Ue5z8jkL8pAJP17wjaSW	2020-01-04 19:16:24.153344+05:30	2020-01-04 19:16:24.153344+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+18	testnow	rohan4@janmail.org	$2b$10$RvJZCok.QPmKQ8mZ00oluul.tXO1YE62/oR0iHvUWat2DWGaG8wGS	2020-01-04 19:19:36.910543+05:30	2020-01-04 19:19:36.910543+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+19	testtttt	rohan9@janmail.org	$2b$10$zcoiNEtXissZVCZRjtToPOZp3szAj0gSvsJrE.fF2X6ORqza90WQW	2020-01-04 19:21:56.96942+05:30	2020-01-04 19:21:56.96942+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+20	finalnow	rohan3@onmail.top	$2b$10$z0P1BG5M8CyTiMhEGR3qDuYBSxbJnEhb8q3IeNjiuu7cTxbxhcJA2	2020-01-04 19:27:57.78473+05:30	2020-01-04 19:27:57.78473+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+21	testhere	rohan1@clsn1.com	$2b$10$rL7cx2q4suEZmzhzJLcoKuE1NgYLhDqprFWtrpOl6stMHF//zk6sC	2020-01-04 19:30:52.074515+05:30	2020-01-04 19:30:52.074515+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+22	biewwea	rohan1@seo-mailer.com	$2b$10$mZOXE5sh876/CEHwfaWIt.isWUT3wUA403b6StU/PE3SJ7jHDMtmO	2020-01-04 19:35:27.984074+05:30	2020-01-04 19:35:27.984074+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+23	kyahua	testnw@janmail.org	$2b$10$mGaHljREUQHAOZiblP52bO5/LWGOLkm3L/dKS0mQMe7WR/cOXVNL.	2020-01-04 19:40:52.165101+05:30	2020-01-04 19:40:52.165101+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+24	sonowtest	rohan10@janmail.org	$2b$10$ZYmQxWBWDb7btmwUp/MIMOyEscQ8XKYe0h9SKL/v8kw9QzpeX3kXO	2020-01-04 19:45:14.142496+05:30	2020-01-04 19:45:14.142496+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+25	testnopls	rohan1@mailon.ws	$2b$10$V.MdMgDVzXMRSMdyBXTTx.T0qZv2d5KUukWflb22zUsakCoyIi9ie	2020-01-04 19:49:25.740835+05:30	2020-01-04 19:49:25.740835+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+26	teststts	rohan-test2@janmail.org	$2b$10$AOlYW5D/V0P6xozyz6/19eXgbR7Ik3p2wCPwSAFZK/G1kPMz3m5ue	2020-01-04 19:52:16.767876+05:30	2020-01-04 19:52:16.767876+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+27	catdog	rohan76@janmail.org	$2b$10$zsKC96NfiDk1WmqWeTKua.Fhe3bvgxtrkF7QKY1kmhvwAiTbVSygW	2020-01-04 19:55:20.820356+05:30	2020-01-04 19:55:20.820356+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+28	newworkspaceuser	rohanq@janmail.org	$2b$10$GL2O6jXs3pi6kt8oG1KU6enhWyz9WuaIuZK16z0dDncrhe8xPO0be	2020-01-05 00:21:00.988411+05:30	2020-01-05 00:21:00.988411+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+29	newwork1	rohanw@janmail.org	$2b$10$yWnZOkmBerMmCOOyB00Ei.EwRKBAqu0hp6OKIEOcNfBhvGsrSkVhq	2020-01-05 00:29:33.00877+05:30	2020-01-05 00:29:33.00877+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+31	newworkw	rohanr@janmail.org	$2b$10$metvFSOMUIBMqFj3soqZP.YGdy9cd5vyM.r0oX5T6bp8hFwYgAqlK	2020-01-05 00:36:01.773417+05:30	2020-01-05 00:36:01.773417+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+32	newworkkksks	rohant@janmail.org	$2b$10$/BkaF2XfvvwdBjDq7z3QRuHoPhAJEkf9bUuh4X2O79aZAxnstwbUa	2020-01-05 00:38:38.543888+05:30	2020-01-05 00:38:38.543888+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+35	rohancm	jamonip604@clsn.top	$2b$10$Sy8XmIn80p216Dcxo7i7weOhbrz4MyL81hUNJyjxKCzeatqsjVbhq	2020-01-05 02:16:07.141736+05:30	2020-01-05 02:16:07.141736+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+36	cmrohan	test34@janmail.org	$2b$10$gOB7ALktXP4Xnp3zVSLZkem2RpIxwsah29lVywQfXruWgeCrwCAAe	2020-01-05 02:21:30.881865+05:30	2020-01-05 02:21:30.881865+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+70	blah	testblah@janmail.org	$2b$10$aVkhPNKZJx8nO4xfrfQIWOjJd7ByYQWXJdg./hkMM6GEerb3P.Ue2	2020-01-05 02:56:40.661124+05:30	2020-01-05 02:56:40.661124+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+71	sanjit	blahtestnw@janmail.org	$2b$10$v.WCFFlF8TygiwWZMhSbPOlkoNnlZVDzAw0.RwWdPXchyMKLO.9VK	2020-01-05 03:06:01.094469+05:30	2020-01-05 03:06:01.094469+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+72	cmonnow	rohan098@janmail.org	$2b$10$5eKeXk/2Rmte.6Uy.IwueOCuLmGxPjMOVkG3KxIh0sPb9VlFoLyT.	2020-01-05 03:10:38.52143+05:30	2020-01-05 03:10:38.52143+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+73	roh786	rohan786@janmail.org	$2b$10$ZQX15tCxKFTLvyT4Wr2QJOhYAqTC1TxzYeGi10l8ajP8r4og/PNA2	2020-01-05 03:13:20.712063+05:30	2020-01-05 03:13:20.712063+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+74	deluzxe	rohanram@janmail.org	$2b$10$BM43bSEUP2UNxn8gItvJ7Oqj0c5A.Yia.yfWMoNX/yUCDQJa9fXCW	2020-01-05 03:39:35.086003+05:30	2020-01-05 03:39:35.086003+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+33	demo	rohany@janmail.org	$2b$10$iQvD1DI3ao058mnIIamQdeD16XC6zFnWIh9.3I8JdUhs9f29Erx06	2020-01-05 00:49:18.395447+05:30	2020-01-05 00:49:18.395447+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+34	demonew	rohanu@janmail.org	$2b$10$2kMqR1VhdM.cLgtPML7/nurypmtusl45bc7Tbqxwo148m/M6xw4.W	2020-01-05 01:17:51.01224+05:30	2020-01-05 01:17:51.01224+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+80	testchannelinvite	handleinvitenw@janmail.org	$2b$10$H5wTe7QqC1ccG6aa9ofeQumdH9HfN38SHxTS9RD7PQ9xZdkm3G1X6	2020-01-16 16:25:09.617231+05:30	2020-01-16 16:25:09.617231+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+81	testchannelinvite44	testchannel@onmail.top	$2b$10$O7FfS8l.BaHXtSFj9b3B7ukOwnFew6pAaEqnZu5fL6fvPb/P8qEI2	2020-01-16 16:30:27.028827+05:30	2020-01-16 16:30:27.028827+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+82	hopeitworks	testchannel@mailon.ws	$2b$10$2rfrXIHTXUsEP./MQFUBf.OGlzG1U957R5m04hwV58hgF1ccbicLC	2020-01-16 16:32:55.339208+05:30	2020-01-16 16:32:55.339208+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+75	testInvite	invite@janmail.org	$2b$10$xEI7P4cB8POFFDk.TCLPUu219qxuxC9QFsJN12ad52aN.RXhcC2/m	2020-01-08 12:57:59.063516+05:30	2020-01-08 12:57:59.063516+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+83	hopenw	rohanram@jancloud.net	$2b$10$knX5PgBygc6PONJ0h2hVieNzHFXmBfzBAadsQ8xqBNWZsbImPcpqy	2020-01-16 16:35:38.025133+05:30	2020-01-16 16:35:38.025133+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+76	testInvite1	handleinvite@janmail.org	$2b$10$VD84A6MLyeTUlp95gP8fke6HlupQK8KgY9ObuZHAf6cEBWkqQZ5hO	2020-01-08 13:02:56.128603+05:30	2020-01-08 13:02:56.128603+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+37	rhancm	rohan123@janmail.org	$2b$10$dBvt6fu8xWc6oLAVR7p96O49PhiXXQoThh.f0yQmc6rIemj5IL14G	2020-01-05 02:30:52.005245+05:30	2020-01-05 02:30:52.005245+05:30	\N	\N	Etc/GMT+12	\N	http://www.gravatar.com/avatar/980f8cef7ce0b4b2b2081bac70aed6fa?s=80&d=identicon	t	\N	\N	GOOGLE-DRIVE
+77	rohanbienew	rohanqw@janmail.org	$2b$10$LwN2vUiYodPNkBd2Cmtk9ekpJ6XPAGH.TmglQWZhUHAK0FiyKiGGi	2020-01-16 15:22:57.31219+05:30	2020-01-16 15:22:57.31219+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+78	rohanbienewtest	rohan09@janmail.org	$2b$10$p5L4GMISbRs5OT53lctwDeCqojYX/nc9b7eim1WLFtBtsctMHfyvG	2020-01-16 15:30:45.389715+05:30	2020-01-16 15:30:45.389715+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+79	rohanbienewtest1	rohan22@janmail.org	$2b$10$Mt0ZPF9PTNKAFt03p4WvB.dkd8ONbY7LHQazDDkkWi4EgFCi4tz72	2020-01-16 15:33:57.799959+05:30	2020-01-16 15:33:57.799959+05:30	\N	\N	\N	\N	\N	t	\N	\N	GOOGLE-DRIVE
+\.
+
+
+--
+-- Data for Name: workspace-meta; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."workspace-meta" (id, workspace_id, meta_key, meta_value) FROM stdin;
+1	24	sizeOfTeam	1-5
+2	24	companyRole	Owner
+4	24	companyIndustry	Finance
+3	24	howFind	google
+\.
+
+
+--
+-- Data for Name: workspaces; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.workspaces (id, name, description, active, created_by, created_at, updated_at, workspace_type, allow_new_registration, show_signup_button, must_have_email, default_user_type) FROM stdin;
+6	PERSONAL		t	16	2020-01-04 18:41:46.268024+05:30	2020-01-04 18:41:46.268024+05:30	PERSONAL	t	t	\N	MEMBER
+7	PERSONAL		t	17	2020-01-04 19:16:24.160511+05:30	2020-01-04 19:16:24.160511+05:30	PERSONAL	t	t	\N	MEMBER
+8	PERSONAL		t	18	2020-01-04 19:19:36.915648+05:30	2020-01-04 19:19:36.915648+05:30	PERSONAL	t	t	\N	MEMBER
+9	PERSONAL		t	19	2020-01-04 19:21:56.973143+05:30	2020-01-04 19:21:56.973143+05:30	PERSONAL	t	t	\N	MEMBER
+10	PERSONAL		t	20	2020-01-04 19:27:57.789804+05:30	2020-01-04 19:27:57.789804+05:30	PERSONAL	t	t	\N	MEMBER
+11	PERSONAL		t	21	2020-01-04 19:30:52.079084+05:30	2020-01-04 19:30:52.079084+05:30	PERSONAL	t	t	\N	MEMBER
+12	PERSONAL		t	22	2020-01-04 19:35:27.9901+05:30	2020-01-04 19:35:27.9901+05:30	PERSONAL	t	t	\N	MEMBER
+13	PERSONAL		t	23	2020-01-04 19:40:52.168979+05:30	2020-01-04 19:40:52.168979+05:30	PERSONAL	t	t	\N	MEMBER
+14	PERSONAL		t	24	2020-01-04 19:45:14.146857+05:30	2020-01-04 19:45:14.146857+05:30	PERSONAL	t	t	\N	MEMBER
+2	PERSONAL		t	12	2019-11-24 13:21:45.031734+05:30	2019-11-24 13:21:45.031734+05:30	PUBLIC	t	t	\N	MEMBER
+3	PERSONAL		t	13	2019-12-01 00:23:59.759468+05:30	2019-12-01 00:23:59.759468+05:30	PUBLIC	t	t	\N	MEMBER
+33	PERSONAL		t	12	2019-12-01 02:11:07.542816+05:30	2019-12-01 02:11:07.542816+05:30	PUBLIC	t	t	\N	MEMBER
+5	PERSONAL		t	15	2019-12-25 18:11:27.843194+05:30	2019-12-25 18:11:27.843194+05:30	PUBLIC	t	t	\N	MEMBER
+1	TEST		t	11	2019-11-24 09:27:51.588793+05:30	2019-11-24 09:27:51.588793+05:30	PUBLIC	t	t	\N	MEMBER
+15	PERSONAL		t	25	2020-01-04 19:49:25.74691+05:30	2020-01-04 19:49:25.74691+05:30	PERSONAL	t	t	\N	MEMBER
+16	PERSONAL		t	26	2020-01-04 19:52:16.772003+05:30	2020-01-04 19:52:16.772003+05:30	PERSONAL	t	t	\N	MEMBER
+17	PERSONAL		t	27	2020-01-04 19:55:20.823898+05:30	2020-01-04 19:55:20.823898+05:30	PERSONAL	t	t	\N	MEMBER
+18	PERSONAL		t	28	2020-01-05 00:21:00.993076+05:30	2020-01-05 00:21:00.993076+05:30	PERSONAL	t	t	\N	MEMBER
+19	PERSONAL		t	29	2020-01-05 00:29:33.011882+05:30	2020-01-05 00:29:33.011882+05:30	PERSONAL	t	t	\N	MEMBER
+20	PERSONAL		t	31	2020-01-05 00:36:01.777673+05:30	2020-01-05 00:36:01.777673+05:30	PERSONAL	t	t	\N	MEMBER
+21	PERSONAL		t	32	2020-01-05 00:38:38.547027+05:30	2020-01-05 00:38:38.547027+05:30	PERSONAL	t	t	\N	MEMBER
+22	PERSONAL		t	33	2020-01-05 00:49:18.400384+05:30	2020-01-05 00:49:18.400384+05:30	PERSONAL	t	t	\N	MEMBER
+23	PERSONAL		t	34	2020-01-05 01:17:51.016036+05:30	2020-01-05 01:17:51.016036+05:30	PERSONAL	t	t	\N	MEMBER
+25	PERSONAL		t	35	2020-01-05 02:16:07.148956+05:30	2020-01-05 02:16:07.148956+05:30	PERSONAL	t	t	\N	MEMBER
+26	PERSONAL		t	36	2020-01-05 02:21:30.887365+05:30	2020-01-05 02:21:30.887365+05:30	PERSONAL	t	t	\N	MEMBER
+27	PERSONAL		t	37	2020-01-05 02:30:52.008876+05:30	2020-01-05 02:30:52.008876+05:30	PERSONAL	t	t	\N	MEMBER
+60	PERSONAL		t	70	2020-01-05 02:56:40.665979+05:30	2020-01-05 02:56:40.665979+05:30	PERSONAL	t	t	\N	MEMBER
+61	PERSONAL		t	71	2020-01-05 03:06:01.09826+05:30	2020-01-05 03:06:01.09826+05:30	PERSONAL	t	t	\N	MEMBER
+62	PERSONAL		t	72	2020-01-05 03:10:38.524616+05:30	2020-01-05 03:10:38.524616+05:30	PERSONAL	t	t	\N	MEMBER
+63	PERSONAL		t	73	2020-01-05 03:13:20.716607+05:30	2020-01-05 03:13:20.716607+05:30	PERSONAL	t	t	\N	MEMBER
+64	PERSONAL		t	74	2020-01-05 03:39:35.089824+05:30	2020-01-05 03:39:35.089824+05:30	PERSONAL	t	t	\N	MEMBER
+65	PERSONAL		t	75	2020-01-08 12:57:59.070087+05:30	2020-01-08 12:57:59.070087+05:30	PERSONAL	t	t	\N	MEMBER
+66	PERSONAL		t	76	2020-01-08 13:02:56.132474+05:30	2020-01-08 13:02:56.132474+05:30	PERSONAL	t	t	\N	MEMBER
+67	PERSONAL		t	77	2020-01-16 15:22:57.322382+05:30	2020-01-16 15:22:57.322382+05:30	PERSONAL	t	t	\N	MEMBER
+68	TESTFLOW		t	77	2020-01-16 15:23:23.268253+05:30	2020-01-16 15:23:23.268253+05:30	PUBLIC	t	t	\N	MEMBER
+69	PERSONAL		t	78	2020-01-16 15:30:45.396688+05:30	2020-01-16 15:30:45.396688+05:30	PERSONAL	t	t	\N	MEMBER
+70	TESTWORKSPACEFLOW		t	78	2020-01-16 15:31:11.312747+05:30	2020-01-16 15:31:11.312747+05:30	PUBLIC	t	t	\N	MEMBER
+71	PERSONAL		t	79	2020-01-16 15:33:57.80412+05:30	2020-01-16 15:33:57.80412+05:30	PERSONAL	t	t	\N	MEMBER
+72	TESTFLOWWORKSPACE		t	79	2020-01-16 15:34:18.640181+05:30	2020-01-16 15:34:18.640181+05:30	PUBLIC	t	t	\N	MEMBER
+73	PERSONAL		t	80	2020-01-16 16:25:09.623989+05:30	2020-01-16 16:25:09.623989+05:30	PERSONAL	t	t	\N	MEMBER
+74	PERSONAL		t	81	2020-01-16 16:30:27.033178+05:30	2020-01-16 16:30:27.033178+05:30	PERSONAL	t	t	\N	MEMBER
+75	PERSONAL		t	82	2020-01-16 16:32:55.345006+05:30	2020-01-16 16:32:55.345006+05:30	PERSONAL	t	t	\N	MEMBER
+76	PERSONAL		t	83	2020-01-16 16:35:38.029974+05:30	2020-01-16 16:35:38.029974+05:30	PERSONAL	t	t	\N	MEMBER
+24	rohanfirst		t	37	2020-01-05 01:18:15.752485+05:30	2020-01-05 01:18:15.752485+05:30	PUBLIC	t	t	\N	MEMBER
+\.
+
+
+--
+-- Name: channel-meta_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."channel-meta_id_seq"', 1, false);
+
+
+--
+-- Name: channel-notes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."channel-notes_id_seq"', 17, true);
+
+
+--
+-- Name: channels_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.channels_id_seq', 140, true);
+
+
+--
+-- Name: connections_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.connections_id_seq', 194, true);
+
+
+--
+-- Name: departments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.departments_id_seq', 10, true);
+
+
+--
+-- Name: message-meta_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."message-meta_id_seq"', 1, false);
+
+
+--
+-- Name: messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.messages_id_seq', 503, true);
+
+
+--
+-- Name: rooms_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.rooms_id_seq', 1, false);
+
+
+--
+-- Name: user-channel-relationships_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."user-channel-relationships_id_seq"', 257, true);
+
+
+--
+-- Name: user-message-meta_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."user-message-meta_id_seq"', 1, false);
+
+
+--
+-- Name: user-meta_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."user-meta_id_seq"', 81, true);
+
+
+--
+-- Name: user-user-relationships_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."user-user-relationships_id_seq"', 1, false);
+
+
+--
+-- Name: user-workspace-relationships_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."user-workspace-relationships_id_seq"', 89, true);
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 83, true);
+
+
+--
+-- Name: workspace-meta_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."workspace-meta_id_seq"', 4, true);
+
+
+--
+-- Name: workspaces_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.workspaces_id_seq', 76, true);
+
+
+--
+-- Name: SequelizeMeta SequelizeMeta_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."SequelizeMeta"
+    ADD CONSTRAINT "SequelizeMeta_pkey" PRIMARY KEY (name);
+
+
+--
+-- Name: Session Session_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Session"
+    ADD CONSTRAINT "Session_pkey" PRIMARY KEY (sid);
+
+
+--
+-- Name: channel-meta channel-meta_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."channel-meta"
+    ADD CONSTRAINT "channel-meta_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: channel-notes channel-notes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."channel-notes"
+    ADD CONSTRAINT "channel-notes_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: channels channels_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.channels
+    ADD CONSTRAINT channels_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: connections connections_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.connections
+    ADD CONSTRAINT connections_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: departments departments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.departments
+    ADD CONSTRAINT departments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: message-meta message-meta_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."message-meta"
+    ADD CONSTRAINT "message-meta_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: messages messages_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.messages
+    ADD CONSTRAINT messages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: rooms rooms_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.rooms
+    ADD CONSTRAINT rooms_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user-channel-relationships user-channel-relationships_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user-channel-relationships"
+    ADD CONSTRAINT "user-channel-relationships_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: user-message-meta user-message-meta_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user-message-meta"
+    ADD CONSTRAINT "user-message-meta_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: user-meta user-meta_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user-meta"
+    ADD CONSTRAINT "user-meta_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: user-user-relationships user-user-relationships_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user-user-relationships"
+    ADD CONSTRAINT "user-user-relationships_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: user-workspace-relationships user-workspace-relationships_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."user-workspace-relationships"
+    ADD CONSTRAINT "user-workspace-relationships_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_key UNIQUE (email);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_username_key UNIQUE (username);
+
+
+--
+-- Name: workspace-meta workspace-meta_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."workspace-meta"
+    ADD CONSTRAINT "workspace-meta_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: workspaces workspaces_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.workspaces
+    ADD CONSTRAINT workspaces_pkey PRIMARY KEY (id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
